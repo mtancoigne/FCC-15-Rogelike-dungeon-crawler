@@ -1,0 +1,24 @@
+{
+	"mappings": [
+		{
+			"src": "src/client/app/scss/",
+			"dest": "src/client/public/"
+	  }
+	],
+
+	"ignores": ["*.css", "*.js", "node_modules/", ".git/"],
+
+	"options": {
+		"outputStyle": "normal",
+		"lineComments": false,
+		"debugInfo": false,
+		"strictMath": false,
+		"strictUnits": false,
+		"sourceMap": false,
+    "autoprefix": false
+	},
+
+	"customOptions": [],
+
+	"includePaths": []
+}
