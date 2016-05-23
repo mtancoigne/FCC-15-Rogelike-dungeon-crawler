@@ -30,3 +30,137 @@ blockquote:before, blockquote:after, q:before, q:after {
 table {
   border-collapse: collapse;
   border-spacing: 0; }
+
+* {
+  box-sizing: border-box; }
+
+body {
+  background-color: #DDD;
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #444;
+  line-height: 18px;
+  padding: 10px; }
+
+#menu {
+  width: 250px;
+  float: left;
+  border: 1px solid #c4c4c4;
+  border-bottom-width: 3px;
+  background-color: #eaeaea;
+  padding: 10px; }
+#menu h3 {
+  border-bottom: 1px solid #c4c4c4;
+  font-size: 1.2em;
+  margin-top: 15px; }
+#menu h3:first-child {
+  margin-top: 0px; }
+
+#questLog {
+  border: 1px solid #d0d0d0;
+  background-color: #FFFFEE;
+  color: #000011;
+  padding: 3px;
+  font-family: monospace; }
+
+#game {
+  border: 1px solid #c4c4c4;
+  background-color: #eaeaea;
+  margin-left: 265px;
+  height: 100%; }
+
+.row {
+  display: table-row; }
+
+.cell {
+  display: table-cell;
+  width: 7px;
+  border: none; }
+
+.cell:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+  border: none; }
+
+.cell-wall {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAMElEQVQIW2NkwA18GHHI+TAwMGzBJgmWAGlCl4RLoEvCJDB0ouhgYGCA24kuAXcjAJOJCFSmjFfLAAAAAElFTkSuQmCC);
+  background-size: 100% auto;
+  background-color: #c4c4c4; }
+
+.cell-floor {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAL0lEQVQIW2NkgAAfKI1CMUIltlBNUpKBgeE5yFhsAC4JcgzITpAAMgDrhElimAAA2UEIVBhnGn4AAAAASUVORK5CYII=);
+  background-size: 100% auto;
+  background-color: #c1ac53; }
+
+.cell-enemy {
+  background-color: #FC8888; }
+
+.cell-item {
+  background-color: #8888FC; }
+
+.cell-boss {
+  background-color: #F00; }
+
+.room-0 {
+  background-color: #d07571; }
+
+.room-1 {
+  background-color: #e283ca; }
+
+.room-2 {
+  background-color: #cdd76e; }
+
+.room-3 {
+  background-color: #c28c7a; }
+
+.room-4 {
+  background-color: #a48bae; }
+
+.room-5 {
+  background-color: #c5edea; }
+
+.room-6 {
+  background-color: #a29c6b; }
+
+.room-7 {
+  background-color: #f29e65; }
+
+.room-8 {
+  background-color: #b2e8d7; }
+
+.room-9 {
+  background-color: #dcfd98; }
+
+.room-10 {
+  background-color: #a4afdb; }
+
+.room-11 {
+  background-color: #bbc7fe; }
+
+.room-12 {
+  background-color: #827ab3; }
+
+.room-13 {
+  background-color: #d88afe; }
+
+.room-14 {
+  background-color: #85716f; }
+
+.room-15 {
+  background-color: #a58bbd; }
+
+.room-16 {
+  background-color: #c372c6; }
+
+.room-17 {
+  background-color: #a5c9b4; }
+
+.room-18 {
+  background-color: #6c9168; }
+
+.room-19 {
+  background-color: #c3dcb9; }
+
+.room-20 {
+  background-color: #9a9be7; }
