@@ -1,0 +1,182 @@
+/// Demo-related styles
+/// -------------------
+///
+/// You can skip this in your own implementation.
+///
+/// @author Manuel Tancoigne
+/// @license MIT
+
+/*
+  Variables
+*/
+// Document background
+$bg-color:#DDD;
+// Default
+$border-color:darken($bg-color, 10%);
+$pane-bg-color:lighten($bg-color, 5%);
+$log-bg-color: #FFFFEE;
+
+$green-border-color:mix(#0F0, $border-color);
+$blue-border-color:mix(#00F, $border-color);
+$red-border-color:mix(#F00, $border-color);
+$orange-border-color:mix(#F80, $border-color);
+$font-size:12px;
+$font-color:#444;
+
+$radius-sm:3px;
+$radius-lg:5px;
+
+$padding-sm:3px;
+$padding-lg:10px;
+
+$margin-sm:5px;
+$margin-lg:15px;
+$main-width: 100%; //14*80+2+2*$padding-lg;
+
+*{
+  box-sizing: border-box;
+}
+
+body{
+  background-color:$bg-color;
+  font-family: sans-serif;
+  font-size:$font-size;
+  color:$font-color;
+  line-height: $font-size+2*$padding-sm;
+  padding:$padding-lg;
+}
+
+h1{
+  font-size:2em;
+  font-weight:bold;
+}
+
+h2{
+  font-size:1.5em;
+  font-weight:bold;
+}
+
+small{
+  font-size:0.8em;
+  color: #999;
+}
+
+button{
+  background-color: lighten($border-color, 5%);
+  border:1px solid  $border-color;
+  border-radius: $radius-sm;
+  padding:$padding-sm $padding-lg;
+  border-bottom-width:$radius-sm;
+  &:hover{
+    background-color:lighten($border-color, 15%);
+  }
+  .active{
+    top:$radius-sm;
+    border-top:$radius-sm;
+    border-bottom-width: 1px;
+    background-color:lighten($border-color, 10%);
+  }
+}
+
+input{
+  background-color:$bg-color;
+  border:1px solid $border-color;
+  padding:$padding-sm;
+  border-bottom-width: 3px;
+}
+
+input:focus{
+  background-color: lighten($bg-color, 10%);
+}
+
+/* Remove controls from Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  text-align: right;
+}
+
+/* Re-applies the controls on :hover and :focus */
+input[type="number"]:hover,
+input[type="number"]:focus {
+  -moz-appearance: number-input;
+}
+// Remove the glow.
+textarea, input { outline: none; }
+
+#app{
+  width:($main-width);
+}
+
+#main{
+  display: flex;
+  margin:$margin-lg 0px;
+}
+#menu{
+  width:250px;
+  margin-right: $margin-lg;
+  button{
+    display: block;
+    width:100%;
+    margin-bottom: $margin-sm;
+  }
+}
+
+#questLog{
+  font-family:monospace;
+  font-size:0.8em;
+  &.info{
+    border-bottom:$padding-sm solid $border-color;
+    font-size:1.5em;
+    margin-bottom:$margin-sm;
+    color:darken($font-color, 10%);
+  }
+}
+
+.disabled{
+  opacity: 0.7;
+}
+
+.panel{
+  border: 1px solid $border-color;
+  background-color: $pane-bg-color;
+  padding: $padding-lg;
+}
+
+.tooltip {
+	display:none;
+	position:absolute;
+	border:1px solid #333;
+	background-color:#161616;
+	border-radius:$radius-sm;
+	padding:$padding-sm $padding-lg;
+	color:#fff;
+	font-size:0.8em;
+  font-family:monospace;
+  li{
+    margin-left:$margin-lg;
+  }
+  strong{
+    text-decoration: underline;
+  }
+}
+
+.message-success{
+  background-color: transparentize($green-border-color, 0.8);
+  border-color: $green-border-color;
+  color:$font-color;
+}
+.message-info{
+  background-color: transparentize($blue-border-color, 0.8);
+  border-color: $blue-border-color;
+  color:$font-color;
+}
+.message-danger{
+  background-color: transparentize($orange-border-color, 0.8);
+  border-color: $orange-border-color;
+  color:$font-color;
+}
+message-fatal{
+  background-color: transparentize($red-border-color, 0.8);
+  border-color: $red-border-color;
+  color:$font-color;
+}
