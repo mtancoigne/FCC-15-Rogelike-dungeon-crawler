@@ -4,21 +4,20 @@ import Row from './Row.jsx';
 class Grid extends React.Component{
   render(){
     var rowId=-1;
-
-    var gridRows=this.props.grid.map((row)=>{
-      rowId++;
-      return (
+    var gridRows=[];
+    for(let i in this.props.grid){
+      gridRows.push(
         <Row
-          rowData={row}
+          rowData={this.props.grid[i]}
           cells={this.props.cells}
-          key={rowId}
-          y={rowId}
+          key={i}
+          y={i}
           items={this.props.items}
         />
-      );
-    });
+      )
+    }
     return(
-      <div id="grid">
+      <div id="grid" className="panel">
         {gridRows}
       </div>
     );

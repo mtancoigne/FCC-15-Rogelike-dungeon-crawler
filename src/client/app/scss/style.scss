@@ -24,7 +24,7 @@ $prefix:'map-';
 
 /// Cell size
 /// @type length
-$cell-size:14px;
+$cell-size:35;
 $cell-bg-width:100%;
 
 // Some colors, for cells backgrounds
@@ -72,14 +72,14 @@ $img-lava:url('data:image/gif;base64,R0lGODdhDgAOACcAACH/C05FVFNDQVBFMi4wAwEAAAA
 // Walls
 .#{$prefix}cell-wall{
   background-image: $img-wall;
-  background-size: $cell-bg-width auto;
+  background-size: 25% auto;
   background-color: $wallColor;
 }
 
 // Floor
 .#{$prefix}cell-floor{
   background-image: $img-floor;
-  background-size: 50% auto;
+  background-size: 25% auto;
   background-color: $floorColor;
 }
 
@@ -87,14 +87,14 @@ $img-lava:url('data:image/gif;base64,R0lGODdhDgAOACcAACH/C05FVFNDQVBFMi4wAwEAAAA
 .#{$prefix}cell-water{
   /*background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAMElEQVQIW2NkwAMYoXLGUPosMh8kCZJAEYTxYTqxGg6SlITKPIfScD6yTgxFeI0FAHc5BlSOgEKdAAAAAElFTkSuQmCC);*/
   background-image: $img-water;
-  background-size: $cell-bg-width auto;
+  background-size: 25% auto;
   background-color:$waterColor !important;
 }
 // Lava
 .#{$prefix}cell-lava{
   //background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAMElEQVQIW2NkwAMYoXLGUPosMh8kCZJAEYTxYTqxGg6SlITKPIfScD6yTgxFeI0FAHc5BlSOgEKdAAAAAElFTkSuQmCC);
   background-image: $img-lava;
-  background-size: $cell-bg-width auto;
+  background-size: 25% auto;
   background-color:$lavaColor !important;
 }
 
@@ -115,21 +115,37 @@ $img-lava:url('data:image/gif;base64,R0lGODdhDgAOACcAACH/C05FVFNDQVBFMi4wAwEAAAA
 
 // Item
 .#{$prefix}cell-item-chest:after{
+  background-size: 100% auto;
   background-image: $img-chest;
 }
 
 .#{$prefix}cell-item-health:after{
+  background-size: 100% auto;
   background-image: $img-health;
 }
 
 // Boss
 .#{$prefix}cell-item-boss:after{
+  background-size: 100% auto;
   background-image: $img-boss;
 }
 
 // Boss
 .#{$prefix}cell-item-player:after{
-  background: $img-player;
+  background-size: 100% auto;
+  background-image: $img-player !important;
+}
+.#{$prefix}cell-item-tomb:after{
+  background-size: 100% auto;
+  //background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAbklEQVQYlZ2Pyw2AIBBEH8Q6LIvEPigD6zBZu6KR8SCGhXgwzl428/YLHyQfmyZkkqQim/CAzOEIYCR2TlYAEqV1xac9UxvqatCc1fNltOpQFv2o1Ary/KVJMknFvXLvDFAJVAIAG0cYrn3Tf3gBjR9DdyhQCO8AAAAASUVORK5CYII=);
+  background-image:$img-enemy;
+  background-color:#FFF;
+}
+.#{$prefix}cell-item-tomb-player:after{
+  background-size: 100% auto;
+  //background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAbklEQVQYlZ2Pyw2AIBBEH8Q6LIvEPigD6zBZu6KR8SCGhXgwzl428/YLHyQfmyZkkqQim/CAzOEIYCR2TlYAEqV1xac9UxvqatCc1fNltOpQFv2o1Ary/KVJMknFvXLvDFAJVAIAG0cYrn3Tf3gBjR9DdyhQCO8AAAAASUVORK5CYII=);
+  background-image:$img-player;
+  background-color:#FFF;
 }
 
 /* Rooms */
@@ -165,4 +181,29 @@ $img-lava:url('data:image/gif;base64,R0lGODdhDgAOACcAACH/C05FVFNDQVBFMi4wAwEAAAA
     font-size:1.5em;
     font-weight:bold;
   }
+}
+
+.avatar-player{
+  background-image: $img-player;
+  background-size: 100% auto;
+}
+.avatar-player-dead{
+  background-image: none;
+}
+
+.avatar-enemy{
+  background-image: $img-enemy;
+  background-size: 100% auto;
+}
+.avatar-boss{
+  background-image: $img-boss;
+  background-size: 100% auto;
+}
+
+.avatar-none:after{
+  content:"?";
+  line-height:50px;
+  font-size:35px;
+  text-align: center;
+  width:50px;
 }

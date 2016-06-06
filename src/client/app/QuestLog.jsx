@@ -8,13 +8,11 @@ class QuestLog extends React.Component{
   render(){
 
     var content=[]
-    for(let i=this.props.messages.length-1; i>=0; i--){
+    for(let i=0; i<this.props.messages.length; i++){
       content.push(<div className={'message-'+this.props.messages[i].type} key={this.props.messages[i].id}>{this.props.messages[i].message}</div>);
     }
-
     return(
-      <div>
-        <h2>Quest log</h2>
+      <div className="panel">
         <div id="questLog">
           {content}
         </div>

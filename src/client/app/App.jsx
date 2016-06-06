@@ -3,6 +3,7 @@ import {render} from 'react-dom';
 
 import PlayerStats from './PlayerStats.jsx';
 import MapInfos from './MapInfos.jsx';
+import EnemyInfos from './EnemyInfos.jsx';
 import QuestLog from './QuestLog.jsx';
 import Grid from './Grid.jsx';
 
@@ -11,26 +12,44 @@ import MapGen from './data/MapGen.jsx';
 class App extends React.Component{
   render(){
     return(
-      <div id="main">
-        <div id="menu" className="panel">
-          <PlayerStats
-            level={this.state.items['player'].stats.level}
-            life={this.state.items['player'].stats.life}
-            totalLife={this.state.items['player'].stats.totalLife}
-            experience={this.state.items['player'].stats.experience}
-            damage={this.state.items['player'].stats.damage}
-            strength={this.state.items['player'].stats.strength}
-            armor={this.state.items['player'].stats.armor}
+      <div>
+        <MapInfos />
+        <div id="main">
+          <div id="menu">
+            <PlayerStats
+              name={this.state.items['player'].name}
+              description={this.state.items['player'].description}
+              link={this.state.items['player'].link}
+              level={this.state.items['player'].stats.level}
+              life={this.state.items['player'].stats.life}
+              totalLife={this.state.items['player'].stats.totalLife}
+              experience={this.state.items['player'].stats.experience}
+              damage={this.state.items['player'].stats.damage}
+              strength={this.state.items['player'].stats.strength}
+              armor={this.state.items['player'].stats.armor}
+              celerity={this.state.items['player'].stats.celerity}
+              />
+            <EnemyInfos
+              level={this.state.currentEnemy!=null?this._determineLevel(this.state.items[this.state.currentEnemy].stats.experience):null}
+              name={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].name:null}
+              description={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].description:null}
+              link={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].more:null}
+              stats={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].stats:null}
+              className={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].className:null}
+              />
+          </div>
+          <div id="game">
+            <Grid
+              gridWidth={this.state.grid[0].length}
+              gridHeight={this.state.grid[1].length}
+              grid={this.state.vp}
+              cells={this.state.cells}
+              items={this.state.items}
             />
-          <MapInfos />
-          <QuestLog messages={this.state.messages}/>
-        </div>
-        <div id="game" className="panel">
-          <Grid
-            grid={this.state.grid}
-            cells={this.state.cells}
-            items={this.state.items}
-          />
+          </div>
+          <div>
+            <QuestLog messages={this.state.messages}/>
+          </div>
         </div>
       </div>
     );
@@ -54,7 +73,7 @@ class App extends React.Component{
         name:'Leukocyt',
         description: 'You, a white globule',
         canMove:true,
-        stats: Object.assign({}, DEFAULT_STATS, DEFAULT_PLAYER_STATS),
+        stats: Object.assign({}, DEFAULT_STATS, this._levelStats(1)),
         className:'player'
       })
     }, true);
@@ -69,19 +88,49 @@ class App extends React.Component{
 
     // Creating items
     for(let i in ITEMS){
-      let items=this._createItems(i, walkableSafeCells.length, 2);
-      console.log
-      map.addItems(items, true);
+      if(ITEMS[i].type=='item'){
+        let items=this._createItems(i, walkableSafeCells.length, 2);
+        map.addItems(items, true);
+      }
     }
-
 
     this.state={
       cells:map.cells,
       items:map.items,
       grid:map.grid,
+      vp:[],
       messages:[],
+      currentEnemy:null,
+      gameOver:false,
     }
     this.state.cells=this._discoverAroundPlayer(false);
+
+    this.state.vp=this._viewportGrid();
+  }
+
+  _viewportGrid(){
+    var pos=this.state.items.player.position.split(':');
+    var posX=pos[0]-Math.floor((this.props.vpSize-1)/2);
+    var posY=pos[1]-Math.floor((this.props.vpSize-1)/2);
+    var vp=[];
+    if(posX < 0){posX=0};
+    if(posX > this.state.grid[0].length - this.props.vpSize){
+      posX = this.state.grid[0].length - this.props.vpSize
+    };
+    if(posY < 0){posY=0};
+    if(posY > this.state.grid.length - this.props.vpSize){
+      posY = this.state.grid.length - this.props.vpSize;
+    }
+    for(let y=0; y<this.props.vpSize; y++){
+      var row=[];
+      for(let x=0; x<this.props.vpSize; x++){
+        let nPos=(x+posX)+':'+(y+posY);
+        let nY
+        row[x+posX]=(this.state.grid[y+posY][x+posX]);
+      }
+      vp[String(y+posY)]=row;
+    }
+    return vp;
   }
 
   _createBoss(basePlayerStats, number){
@@ -92,13 +141,14 @@ class App extends React.Component{
 
       bossStats.life=basePlayerStats.life*1.7;
       bossStats.damage=Math.ceil(basePlayerStats.damage*(Math.floor(Math.random()*0.7)+1));
-      bossStats.strenght=Math.ceil(basePlayerStats.strenght*(Math.floor(Math.random()*0.7)+1));
+      bossStats.strength=Math.ceil(basePlayerStats.strength*(Math.floor(Math.random()*0.7)+1));
       bossStats.level=basePlayerStats.level+3;
       bossStats.giveXp=bossStats.level*50;
 
       bosses['boss_'+i]=Object.assign({}, DEFAULT_ITEM, {
         name:boss.name,
-        description:boss.description+' <a href="'+boss.more+'" target="_blank">More...</a>',
+        description:boss.description,
+        more:boss.more,
         canMove:true,
         stats: Object.assign({}, DEFAULT_STATS, bossStats),
         className: 'boss',
@@ -113,8 +163,8 @@ class App extends React.Component{
     var stats={}
     // Base life:
     var life=         50+(level*50);
-    var damage=       1+level;
-    var strenght=     1+level;
+    var damage=       9+level;
+    var strength=     1+level;
     var armor=        1+level;
     var experience=(level===1)?0:level*10;
     var giveXp=       10*level;
@@ -123,7 +173,7 @@ class App extends React.Component{
       life:life,
       totalLife:life,
       damage:damage,
-      strenght:strenght,
+      strength:strength,
       armor:armor,
       experience:experience,
       giveXp:giveXp,
@@ -132,7 +182,7 @@ class App extends React.Component{
   }
 
   _determineLevel(experience){
-    return(Math.floor(experience/10));
+    return(Math.floor(experience/10)+1);
   }
 
   _createEnemies(type, basePlayerStats, walkableCells, enemiesPercent, number){
@@ -149,16 +199,17 @@ class App extends React.Component{
       var randomGen=Math.floor(Math.random()*101);
       if(randomGen<80){
         enemyStats=this._levelStats(basePlayerStats.level);
-      }else if (randomGen<90) {
+      }else if (randomGen<80) {
         enemyStats=this._levelStats(basePlayerStats.level+1);
-      }else if(randomGen<97) {
+      }else if(randomGen<95) {
         enemyStats=this._levelStats(basePlayerStats.level+2);
       }else{
         enemyStats=this._levelStats(basePlayerStats.level+3);
       }
       enemies[type+'_'+i]=Object.assign({}, DEFAULT_ITEM, {
         name:enemy.name,
-        description:enemy.description+' <a href="'+enemy.more+'" target="_blank">More...</a>',
+        description:enemy.description,
+        more:enemy.more,
         canMove:true,
         stats: Object.assign({}, DEFAULT_STATS, enemyStats),
         className: type,
@@ -187,6 +238,7 @@ class App extends React.Component{
   }
 
   _move(keyCode){
+    if(this.state.gameOver){return false}
     var playerPos=this.state.items.player.position.split(':')
     var playerX=Number(playerPos[0]);
     var playerY=Number(playerPos[1]);
@@ -211,17 +263,35 @@ class App extends React.Component{
     // Check if cell is walkable
 
     if(this.state.cells[nextPos].type.isWalkable===true){
-      // Check cell content: if ennemy stick to it
+      // Check cell content: if enemy stick to it
       var preventMove=false;
       for(let i in this.state.items){
         if(this.state.items[i].position===nextPos && i!='player'){
-          console.log(this.state.items[i])
+          //console.log(this.state.items[i])
           if(this.state.items[i].type==='hostile'){
-            this._conslog('danger', 'You engaged with a level '+this.state.items[i].stats.level+' '+this.state.items[i].name);
             preventMove=true;
             this._combat(i);
           }else if(this.state.items[i].type==='item'){
-            this._conslog('info', 'You picked up a '+this.state.items[i].name);
+            var items=this.state.items;
+            this._conslog('info', 'You picked up a '+items[i].name);
+            switch (items[i].effect) {
+              case '_potion_life':
+                this._potion_life();
+                break;
+              case '_token_armor':
+                this._token_armor();
+                break;
+              case '_token_damage':
+                this._token_damage();
+                break
+              case '_token_strength':
+                this._token_strength();
+                break;
+              default:
+                this._conslog('fatal', 'Unknown item...');
+            }
+            delete items[i];
+            this.setState({items:items});
           }else{
             this._conslog('info', 'You run into something... But I don\'t know what...');
           }
@@ -234,26 +304,126 @@ class App extends React.Component{
         //this.setState({map.items.player.position:newPos});
         //this._conslog('info', 'You move from '+playerPos+' to ' + nextPos);
         this._discoverAroundPlayer(true);
+        var life=this._doDamages(this.state.cells[nextPos].type.damage, 'player');
+        if(life==0){
+          this._gameOver('You died, burnt by hot lava.');
+        }
+        this.setState({vp:this._viewportGrid()});
       }
     }else{
       console.log('Player can\'t go here.');
     }
   }
 
-  _combat(target){
-    // Define who engage first
+  _gameOver(msg){
+    this.setState({gameOver:true});
+    this.conslog('fatal', msg);
+  }
 
+  _combat(target){
+    var pl=this.state.items.player;
+    var tg=this.state.items[target];
+
+    // Define who engage first
+    var playerFirst=(pl.stats.celerity>pl.stats.celerity);
+
+    // Lock the ennemy
+    this.setState({currentEnemy:target});
+
+    // Log
+    this._conslog((playerFirst?'info':'danger'), '---');
+    this._conslog('danger', 'You engaged with a...');
+    this._conslog('danger', '  - level '+this._determineLevel(this.state.items[target].stats.experience)+' '+this.state.items[target].name);
+    this._conslog((!playerFirst?'info':'danger'), (playerFirst?'You':'The enemy')+' attacked first');
+
+    // Do the damages
+    var isDead=this._doAttack(playerFirst?'player':target, playerFirst?target:'player');
+    this._conslog('info', isDead+' ')
+    if(!isDead){
+      playerFirst=!playerFirst;
+      this._conslog((playerFirst?'info':'danger'), (playerFirst?'You':'The enemy')+' fought back !');
+      isDead=this._doAttack(playerFirst?'player':target, playerFirst?target:'player');
+    }
+  }
+
+  _doDamages(damage, target){
+    var items=this.state.items;
+    if(damage>0){
+      if(target=='player' || target==this.state.currentEnemy){
+        // Eyecandy efect on target
+        var pos=items[target].position.split(':');
+        $('#target-'+(target=='player'?'player':'enemy')).fadeTo(100, 0.5).fadeTo(100,1);
+      }
+
+      // Remove life
+      items[target].stats.life=items[target].stats.life-damage;
+
+      // Check state
+      if(items[target].stats.life <= 0){
+        let pPos=items[target].position;
+        // Nice tomb
+        items[target]=Object.assign({}, DEFAULT_ITEM, ITEMS[target!='player'?'tomb_stone':'tomb_stone_player']);
+        items[target].position=pPos;
+      }
+      this.setState({items:items});
+      return this.state.items[target].life;
+    }
+  }
+
+  _doAttack(attacker, target){
+    var items=this.state.items;
+    var dead=false;
+    var playerFirst=(attacker=="player");
+
+    // Calculates the damages
+    var dmg=this._calcDamages(attacker, target);
+    var currentLife=items[target].life;
+    // Log action and result
+    if( dmg > 0){
+      this._conslog((playerFirst?'info':'danger'),'...and did '+dmg+' damage !');
+
+      // Apply damages
+      currentLife=this._doDamages(dmg, target);
+
+      //Check results
+      if(currentLife===0){
+        this._conslog(playerFirst?'success':'fatal', items[playerFirst?target:'player'].name+' died');
+        if(playerFirst){
+          // Update items
+          items=this.state.items;
+          // Add experience to player
+          items['player'].stats.experience+=items[playerFirst?'player':target].stats.giveXp;
+        }else{
+          this._gameOver('You have been defeated.');
+        }
+        return true
+      }
+    }else{
+      this._conslog((playerFirst?'danger':'info'),'...but failed. !');
+    }
+    return false;
+  }
+
+  _calcDamages(first, second){
+    var f=this.state.items[first].stats;
+    var s=this.state.items[second].stats;
+    // Calculates the damage
+    return Math.ceil(((10+f.strength)/10)*f.damage-s.armor);
   }
 
   _conslog(type, message){
     var messages=this.state.messages
-    messages.push({id:messages.length, type:type, message:message});
+    if(message=='---'){
+      messages.push({id:messages.length, type:'hr', message:'::--::--::'});
+    }else{
+      messages.push({id:messages.length, type:type, message:message});
+    }
     this.setState({messages:messages});
   }
 
   _discoverAroundPlayer(updateState){
     var position=this.state.items.player.position;
-    console.log(position);
+    //console.log(position);
     var playerPos=position.split(':')
     var playerX=Number(playerPos[0]);
     var playerY=Number(playerPos[1]);
@@ -273,7 +443,7 @@ class App extends React.Component{
     for(let i=0; i<matrix.length; i++){
       let newX=playerX+matrix[i][0];
       let newY=playerY+matrix[i][1];
-      if(newX>=0 && newX<=mapWidth && newY>=0 && newY<=mapHeight){
+      if(newX>=0 && newX<=mapWidth-1 && newY>=0 && newY<=mapHeight-1){
         cellCopy[newX+':'+newY].discovered=true;
       }
     }
@@ -284,6 +454,27 @@ class App extends React.Component{
     }
   }
 
+  _potion_life(){
+    var quantity=50;
+    var items=this.state.items;
+    items['player'].stats.life=(items['player'].stats.life+quantity>items['player'].stats.totalLife?items['player'].stats.totalLife:items['player'].stats.life+quantity);
+    this.setState({items:items});
+  }
+  _token_armor(){
+    var items=this.state.items;
+    items['player'].stats.armor+=1;
+    this.setState({items:items});
+  }
+  _token_damage(){
+    var items=this.state.items;
+    items['player'].stats.damage+=1;
+    this.setState({items:items});
+  }
+  _token_strength(){
+    var items=this.state.items;
+    items['player'].stats.strength+=1;
+    this.setState({items:items});
+  }
 }
 
 
@@ -292,7 +483,7 @@ class App extends React.Component{
 GAME CONSTANTS FOR INITIAL generation
 
 */
-const DEFAULT_PLAYER_STATS={life:50, totalLife:50, damage:10, strenght:1, armor:1, level:1, celerity:1};
+const DEFAULT_PLAYER_STATS={life:50, totalLife:50, damage:10, strength:1, armor:1, level:1, celerity:1};
 
 const DEFAULT_ITEM={
   name:'NO NAME',
@@ -302,13 +493,13 @@ const DEFAULT_ITEM={
   storable: false,
   consumable: false,
   position:null,
-  effects:[],
+  effect:null,
   inventory:[],
   stats:{},
   className:'item',
 };
 
-const DEFAULT_STATS={life:-1, totalLife:0, damage:0, strenght:0, armor:0, level:1, experience:0, giveXp:0, celerity:1};
+const DEFAULT_STATS={life:-1, totalLife:0, damage:0, strength:0, armor:0, level:1, experience:0, giveXp:0, celerity:1};
 
 const CELL_TYPES={
   wall:    {name:'wall',   isWalkable:false, classNames:['wall'],  discovered:false, isBaseCell:true},
@@ -318,10 +509,12 @@ const CELL_TYPES={
 };
 
 const ITEMS={
-  life_potion:    {name:'Life potion',       description: 'Gives you 50 points of life', type:'item', storable:false, consumable:true,  className:'health'},
-  token_strength: {name:'Token of strenght', description: 'Adds 1 to your strenght',     type:'item', storable:true,  consumable:false, className:'chest'},
-  token_damage:   {name:'Token of damage',   description: 'Adds 1 to your damage',       type:'item', storable:true,  consumable:false, className:'chest'},
-  token_armor:    {name:'Token of armor',    description: 'Adds 1 to your armor',        type:'item', storable:true,  consumable:false, className:'chest'},
+  tomb_stone:        {name:'Remains',           description: 'A dead enemy',                    type:'special', storable:false, consumable:false, className:'tomb'},
+  tomb_stone_player: {name:'You',               description: 'Diseases took your life away...', type:'special', storable:false, consumable:false, className:'tomb-player'},
+  life_potion:       {name:'Life potion',       description: 'Gives you 50 points of life',     type:'item',    storable:false, consumable:true,  className:'health', effect:'_potion_life'},
+  token_strength:    {name:'Token of strength', description: 'Adds 1 to your strength',         type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_strength'},
+  token_damage:      {name:'Token of damage',   description: 'Adds 1 to your damage',           type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_damage'},
+  token_armor:       {name:'Token of armor',    description: 'Adds 1 to your armor',            type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_armor'},
 };
 
 // Some bosses :
@@ -347,10 +540,13 @@ const ENEMY_NAMES=[
   {name:'Mycobacterium tuberculosis', description:'Tuberculosis generally affects the lungs, but can also affect other parts of the body. Most infections do not have symptoms, known as latent tuberculosis. About 10% of latent infections progress to active disease which, if left untreated, kills about half of those infected.', more:'https://en.wikipedia.org/wiki/Tuberculosis'},
 ];
 const MAP_OPTIONS={x:5, y:5, passes:3, cleanLevel:5, wallPercent:10, sameSubCellPercent:80, cssPrefix:'map-', cellTypes:CELL_TYPES};
-var appRendered=render(<App options={MAP_OPTIONS}/>, document.getElementById('app'));
+
+var appRendered=render(<App options={MAP_OPTIONS} vpSize='15'/>, document.getElementById('app'));
 
 $(document).keyup(function(e) {
   if([37,38,39,40].indexOf(e.keyCode)>-1){
     appRendered._move(e.keyCode);
+    var element = document.getElementById("questLog");
+    element.scrollTop = element.scrollHeight;
   }
 });

@@ -7,14 +7,12 @@ class MapInfos extends React.Component{
 
   render(){
     return(
-      <div>
+      <div className="panel">
         <h2>Dungeon:</h2>
         <p>Final floor of Doom</p>
-        <ul>
-          <li>Bosses: 1/1</li>
-          <li>Enemies: 20/20</li>
-          <li>Chests: 10/10</li>
-        </ul>
+          <p>Bosses: 1/1</p>
+          <p>Enemies: 20/20</p>
+          <p>Chests: 10/10</p>
       </div>
     );
   }
