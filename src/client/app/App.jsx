@@ -139,11 +139,7 @@ class App extends React.Component{
     for (let i=0; i<number; i++){
       let boss=BOSS_NAMES[Math.floor(Math.random()*BOSS_NAMES.length)];
 
-      bossStats.life=basePlayerStats.life*1.7;
-      bossStats.damage=Math.ceil(basePlayerStats.damage*(Math.floor(Math.random()*0.7)+1));
-      bossStats.strength=Math.ceil(basePlayerStats.strength*(Math.floor(Math.random()*0.7)+1));
-      bossStats.level=basePlayerStats.level+3;
-      bossStats.giveXp=bossStats.level*50;
+      bossStats=this._levelStats(basePlayerStats.level+5);
 
       bosses['boss_'+i]=Object.assign({}, DEFAULT_ITEM, {
         name:boss.name,
@@ -189,7 +185,7 @@ class App extends React.Component{
     // Number of enemies to generate:
     var nb=(number!=undefined)?number:Math.floor(enemiesPercent*walkableCells/100);
 
-    // Create ennemies
+    // Create enemies
     var enemies=[];
     for(let i=0; i<nb; i++){
       // Select random enemy
@@ -293,7 +289,7 @@ class App extends React.Component{
             delete items[i];
             this.setState({items:items});
           }else{
-            this._conslog('info', 'You run into something... But I don\'t know what...');
+            this._conslog('info', 'You walked on '+this.state.items[i].name);
           }
         }
       }
@@ -317,7 +313,7 @@ class App extends React.Component{
 
   _gameOver(msg){
     this.setState({gameOver:true});
-    this.conslog('fatal', msg);
+    this._conslog('fatal', msg);
   }
 
   _combat(target){
@@ -327,7 +323,7 @@ class App extends React.Component{
     // Define who engage first
     var playerFirst=(pl.stats.celerity>pl.stats.celerity);
 
-    // Lock the ennemy
+    // Lock the enemy
     this.setState({currentEnemy:target});
 
     // Log
@@ -338,7 +334,8 @@ class App extends React.Component{
 
     // Do the damages
     var isDead=this._doAttack(playerFirst?'player':target, playerFirst?target:'player');
-    this._conslog('info', isDead+' ')
+
+    // Check death
     if(!isDead){
       playerFirst=!playerFirst;
       this._conslog((playerFirst?'info':'danger'), (playerFirst?'You':'The enemy')+' fought back !');
@@ -347,10 +344,11 @@ class App extends React.Component{
   }
 
   _doDamages(damage, target){
-    var items=this.state.items;
     if(damage>0){
+      var items=this.state.items;
+
+      // Eyecandy efect on target
       if(target=='player' || target==this.state.currentEnemy){
-        // Eyecandy efect on target
         var pos=items[target].position.split(':');
         $('#target-'+(target=='player'?'player':'enemy')).fadeTo(100, 0.5).fadeTo(100,1);
       }
@@ -360,24 +358,34 @@ class App extends React.Component{
 
       // Check state
       if(items[target].stats.life <= 0){
+        // Copy position
         let pPos=items[target].position;
         // Nice tomb
         items[target]=Object.assign({}, DEFAULT_ITEM, ITEMS[target!='player'?'tomb_stone':'tomb_stone_player']);
+        // Re-set position
         items[target].position=pPos;
       }
       this.setState({items:items});
-      return this.state.items[target].life;
     }
+    return this.state.items[target].stats.life;
   }
 
   _doAttack(attacker, target){
-    var items=this.state.items;
+    // Copy some values:
+    var tName=this.state.items[target].name;
+    var tXp=this.state.items[target].stats.giveXp;
+
+
+    // Flag to know if the target is dead
     var dead=false;
+    // See if the attacker is the player
     var playerFirst=(attacker=="player");
 
     // Calculates the damages
     var dmg=this._calcDamages(attacker, target);
-    var currentLife=items[target].life;
+    // Get the new life from state
+    var currentLife=this.state.items[target].life;
+
     // Log action and result
     if( dmg > 0){
       this._conslog((playerFirst?'info':'danger'),'...and did '+dmg+' damage !');
@@ -386,13 +394,16 @@ class App extends React.Component{
       currentLife=this._doDamages(dmg, target);
 
       //Check results
-      if(currentLife===0){
-        this._conslog(playerFirst?'success':'fatal', items[playerFirst?target:'player'].name+' died');
+      if(currentLife<=0){
+        this._conslog(playerFirst?'success':'fatal', (!playerFirst? 'You': tName) +' died');
         if(playerFirst){
-          // Update items
-          items=this.state.items;
+          // Get a fresh list of items
+          var items=this.state.items;
           // Add experience to player
-          items['player'].stats.experience+=items[playerFirst?'player':target].stats.giveXp;
+          items['player'].stats.experience+=tXp;
+          // Update the state
+          this.setState({currentEnemy:null});
+          this.setState({items:items});
         }else{
           this._gameOver('You have been defeated.');
         }
@@ -509,8 +520,8 @@ const CELL_TYPES={
 };
 
 const ITEMS={
-  tomb_stone:        {name:'Remains',           description: 'A dead enemy',                    type:'special', storable:false, consumable:false, className:'tomb'},
-  tomb_stone_player: {name:'You',               description: 'Diseases took your life away...', type:'special', storable:false, consumable:false, className:'tomb-player'},
+  tomb_stone:        {name:'Remains',           description: 'A dead enemy',                    type:'special', storable:false, consumable:false, className:'tomb', stats:{life:0}},
+  tomb_stone_player: {name:'You',               description: 'Diseases took your life away...', type:'special', storable:false, consumable:false, className:'tomb-player', stats:{life:0}},
   life_potion:       {name:'Life potion',       description: 'Gives you 50 points of life',     type:'item',    storable:false, consumable:true,  className:'health', effect:'_potion_life'},
   token_strength:    {name:'Token of strength', description: 'Adds 1 to your strength',         type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_strength'},
   token_damage:      {name:'Token of damage',   description: 'Adds 1 to your damage',           type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_damage'},

@@ -15,7 +15,13 @@ class PlayerStats extends React.Component{
     }else{
       barColor='red';
     }
-
+    var pBar='';
+    if(this.props.life>0){
+      pBar=(<div className="progress">
+        <span>{this.props.life}/{this.props.totalLife}</span>
+        <div className="bar-wrap">&nbsp;<div className={'bar '+barColor} style={{width:percent+'%'}}></div></div>
+      </div>)
+    }
     return(
       <div className="avatar" id="target-player">
         <div className="avatar-header">
@@ -41,11 +47,7 @@ class PlayerStats extends React.Component{
             <tr>
               <th>Life:</th>
               <td>
-                <div className="progress">
-                  <span>{this.props.life}/{this.props.totalLife}</span>
-                  <div className="bar-wrap">&nbsp;<div className={'bar '+barColor} style={{width:percent+'%'}}></div></div>
-                </div>
-
+                {pBar}
               </td>
             </tr>
             <tr>
