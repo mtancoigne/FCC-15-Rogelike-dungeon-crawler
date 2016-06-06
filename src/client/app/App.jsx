@@ -13,7 +13,7 @@ class App extends React.Component{
   render(){
     return(
       <div>
-        <MapInfos />
+        <MapInfos items={this._countItems()} orig={this.state.startItems}/>
         <div id="main">
           <div id="menu">
             <PlayerStats
@@ -57,7 +57,13 @@ class App extends React.Component{
 
   constructor(props){
     super(props);
-
+    this.state={
+      messages:[],
+      vp:[],
+      startItems:[],
+      currentEnemy:null,
+      gameOver:false,
+    }
     var map=new MapGen;
     map.init(this.props.options)
     map.createMap();
@@ -94,18 +100,12 @@ class App extends React.Component{
       }
     }
 
-    this.state={
-      cells:map.cells,
-      items:map.items,
-      grid:map.grid,
-      vp:[],
-      messages:[],
-      currentEnemy:null,
-      gameOver:false,
-    }
+    this.state.cells=map.cells;
+    this.state.items=map.items;
+    this.state.grid=map.grid;
     this.state.cells=this._discoverAroundPlayer(false);
-
     this.state.vp=this._viewportGrid();
+    this.state.startItems=this._countItems();
   }
 
   _viewportGrid(){
@@ -151,7 +151,7 @@ class App extends React.Component{
         type:'hostile',
       })
     }
-    console.log('Created '+ number+ ' bosses');
+    //this._conslog('system','Created '+ number+ ' bosses');
     return bosses;
   }
 
@@ -213,7 +213,7 @@ class App extends React.Component{
       });
     }
 
-    console.log("Created "+nb+' "'+type+'"')
+    //this._conslog('system', "Created "+nb+' "'+type+'"')
     return enemies;
   }
 
@@ -227,9 +227,8 @@ class App extends React.Component{
       }
       for(let i=0; i<nb; i++){
         items[name+'_'+i]=Object.assign({}, DEFAULT_ITEM, ITEMS[name]);
-        console.log(name);
       }
-      console.log('Created '+nb+' "'+name+'"');
+      //this._conslog('system', 'Created '+nb+' "'+name+'"');
       return items;
   }
 
@@ -263,7 +262,6 @@ class App extends React.Component{
       var preventMove=false;
       for(let i in this.state.items){
         if(this.state.items[i].position===nextPos && i!='player'){
-          //console.log(this.state.items[i])
           if(this.state.items[i].type==='hostile'){
             preventMove=true;
             this._combat(i);
@@ -283,6 +281,9 @@ class App extends React.Component{
               case '_token_strength':
                 this._token_strength();
                 break;
+              case '_token_celerity':
+                this._token_celerity();
+                break;
               default:
                 this._conslog('fatal', 'Unknown item...');
             }
@@ -297,8 +298,6 @@ class App extends React.Component{
         var items=this.state.items;
         items.player.position=nextPos;
         this.setState({items:items});
-        //this.setState({map.items.player.position:newPos});
-        //this._conslog('info', 'You move from '+playerPos+' to ' + nextPos);
         this._discoverAroundPlayer(true);
         var life=this._doDamages(this.state.cells[nextPos].type.damage, 'player');
         if(life==0){
@@ -306,14 +305,23 @@ class App extends React.Component{
         }
         this.setState({vp:this._viewportGrid()});
       }
-    }else{
-      console.log('Player can\'t go here.');
     }
   }
 
   _gameOver(msg){
     this.setState({gameOver:true});
     this._conslog('fatal', msg);
+  }
+
+  _countItems(){
+    var out=[]
+    for(let i in this.state.items){
+      if(out[this.state.items[i].className]==undefined){
+        out[this.state.items[i].className]=0;
+      }
+      out[this.state.items[i].className]++;
+    }
+    return out;
   }
 
   _combat(target){
@@ -349,8 +357,15 @@ class App extends React.Component{
 
       // Eyecandy efect on target
       if(target=='player' || target==this.state.currentEnemy){
-        var pos=items[target].position.split(':');
-        $('#target-'+(target=='player'?'player':'enemy')).fadeTo(100, 0.5).fadeTo(100,1);
+        //var pos=items[target].position.split(':');
+
+        var div='#target-'+(target=='player'?'player':'enemy');
+        $(div).css('backgroundColor', 'rgba(200, 0, 0,0.5)');
+        var interval=setInterval(function () {
+          $(div).css('backgroundColor', 'rgb(234, 234, 234)');
+          clearInterval(interval);
+        }, 200);
+        $(div).fadeTo(100, 0.5).fadeTo(100,1);
       }
 
       // Remove life
@@ -402,8 +417,7 @@ class App extends React.Component{
           // Add experience to player
           items['player'].stats.experience+=tXp;
           // Update the state
-          this.setState({currentEnemy:null});
-          this.setState({items:items});
+          this.setState({items:items, currentEnemy:null});
         }else{
           this._gameOver('You have been defeated.');
         }
@@ -434,7 +448,6 @@ class App extends React.Component{
 
   _discoverAroundPlayer(updateState){
     var position=this.state.items.player.position;
-    //console.log(position);
     var playerPos=position.split(':')
     var playerX=Number(playerPos[0]);
     var playerY=Number(playerPos[1]);
@@ -486,6 +499,11 @@ class App extends React.Component{
     items['player'].stats.strength+=1;
     this.setState({items:items});
   }
+  _token_celerity(){
+    var items=this.state.items;
+    items['player'].stats.celerity+=1;
+    this.setState({items:items});
+  }
 }
 
 
@@ -526,6 +544,7 @@ const ITEMS={
   token_strength:    {name:'Token of strength', description: 'Adds 1 to your strength',         type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_strength'},
   token_damage:      {name:'Token of damage',   description: 'Adds 1 to your damage',           type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_damage'},
   token_armor:       {name:'Token of armor',    description: 'Adds 1 to your armor',            type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_armor'},
+  token_celerity:    {name:'Token of celerity', description: 'Adds 1 to your celerity',         type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_celerity'},
 };
 
 // Some bosses :

@@ -67,37 +67,37 @@ class EnemyInfos extends React.Component{
         <table>
           <tbody>
             <tr>
-              <th>Level:</th>
+              <th><span className="ico ico-stat-level"></span>Level:</th>
               <td>
                 {level}
               </td>
             </tr>
             <tr>
-              <th>Life:</th>
+              <th><span className="ico ico-stat-life"></span>Life:</th>
               <td>
                 {pBar}
               </td>
             </tr>
             <tr>
-              <th>Strength:</th>
+              <th><span className="ico ico-stat-strength"></span>Strength:</th>
               <td>
                 {strength}
               </td>
             </tr>
             <tr>
-              <th>Damage:</th>
+              <th><span className="ico ico-stat-damage"></span>Damage:</th>
               <td>
                 {damage}
               </td>
             </tr>
             <tr>
-              <th>Armor:</th>
+              <th><span className="ico ico-stat-armor"></span>Armor:</th>
               <td>
                 {armor}
               </td>
             </tr>
             <tr>
-              <th>Celerity:</th>
+              <th><span className="ico ico-stat-celerity"></span>Celerity:</th>
               <td>
                 {celerity}
               </td>

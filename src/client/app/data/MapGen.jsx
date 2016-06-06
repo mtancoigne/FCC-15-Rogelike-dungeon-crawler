@@ -591,7 +591,7 @@ MapGen.prototype.removeSmallRooms=function(minSize){
     }
   }
   // Recalculate indexes for cells
-  console.log('Removed ' + (this.rooms.length-newRooms.length) + ' small rooms.');
+  console.log('...Removed ' + (this.rooms.length-newRooms.length) + ' small rooms.');
   this.rooms=newRooms;
 }
 

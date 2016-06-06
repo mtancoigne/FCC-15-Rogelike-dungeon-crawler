@@ -52,8 +52,7 @@ h1{
 }
 
 h2{
-  margin-bottom:$margin-sm;
-  margin-top:$margin-lg;
+  margin: $margin-sm 0px;
   font-size:1.5em;
   font-weight:bold;
 }
@@ -94,7 +93,8 @@ th{
   padding:$padding-sm $padding-lg;
   width:75px;
   text-align: left;
-  font-weight: bold
+  font-weight: bold;
+  display:flex;
 }
 td{
   padding-left: $padding-sm $padding-lg;
@@ -110,7 +110,12 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
   display: flex;
   margin:$margin-lg 0px;
 }
-
+#mapInfos{
+  display: flex;
+  p{
+    margin: $margin-sm $margin-lg;
+  }
+}
 #menu{
   width:250px;
   .btn{
@@ -260,6 +265,11 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 .message-hr{
   text-align: center;
 }
+.message-system{
+  background-color: transparentize($border-color, 0.8);
+  border-color: $border-color;
+  color:$font-color;
+}
 
 .progress{
   width:100%;
@@ -288,4 +298,9 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 }
 .green{
   background-color:$green-border-color;
+}
+
+#target-player flash, #target-enemy flash{
+  @extend .red;
+  transition-duration: .2s;
 }

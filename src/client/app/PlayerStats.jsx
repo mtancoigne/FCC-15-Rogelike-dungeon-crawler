@@ -39,43 +39,43 @@ class PlayerStats extends React.Component{
         <table>
           <tbody>
             <tr>
-              <th>Level:</th>
+              <th><span className="ico ico-stat-level"></span>Level:</th>
               <td>
                 {this.props.level}
               </td>
             </tr>
             <tr>
-              <th>Life:</th>
+              <th><span className="ico ico-stat-life"></span>Life:</th>
               <td>
                 {pBar}
               </td>
             </tr>
             <tr>
-              <th>Experience:</th>
+              <th><span className="ico ico-stat-xp"></span>Experience:</th>
               <td>
                 {this.props.experience}
               </td>
             </tr>
             <tr>
-              <th>Strength:</th>
+              <th><span className="ico ico-stat-strength"></span>Strength:</th>
               <td>
                 {this.props.strength}
               </td>
             </tr>
             <tr>
-              <th>Damage:</th>
+              <th><span className="ico ico-stat-damage"></span>Damage:</th>
               <td>
                 {this.props.damage}
               </td>
             </tr>
             <tr>
-              <th>Armor:</th>
+              <th><span className="ico ico-stat-armor"></span>Armor:</th>
               <td>
                 {this.props.armor}
               </td>
             </tr>
             <tr>
-              <th>Celerity:</th>
+              <th><span className="ico ico-stat-celerity"></span>Celerity:</th>
               <td>
                 {this.props.celerity}
               </td>
