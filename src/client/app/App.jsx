@@ -17,7 +17,18 @@ class App extends React.Component{
     }else{
       return(
         <div>
-          <MapInfos items={this._countItems()} orig={this.state.startItems}/>
+          <div className="panel message-info" id="infoMessage">
+            <p>This "game" is a Challenge for <a href="http://freecodecamp.com" target="_blank">FreeCodeCamp</a>. You can find the sources <a href="https://github.com/mtancoigne/FCC-15-Rogelike-dungeon-crawler"target="_blank">here</a>.</p>
+            <p>
+              As everything is randomly generated, you may have sometimes trouble to win.<br/>
+              <a href="https://github.com/mtancoigne/FCC-15-Rogelike-dungeon-crawler/issues" target="_blank">Issues and feedback are welcome</a>.
+            </p>
+          </div>
+          <MapInfos
+            items={this._countItems()}
+            orig={this.state.startItems}
+            mapName={this.state.mapName}
+            mapLevel={this.state.mapLevel}/>
           <div id="main">
             <div id="menu">
               <PlayerStats
@@ -66,122 +77,138 @@ class App extends React.Component{
   constructor(props){
     super(props);
 
-    this.state=this._generate();
-    // Calculates cells around the player
-    this.state.cells=this._discoverAroundPlayer(false);
-    // Calculates the content of the viewport
-    this.state.vp=this._viewportGrid();
-    // Count the items
-    this.state.startItems=this._countItems();
-    this.state.loading=false;
-
     this._reset=this._reset.bind(this);
-
   }
 
+  componentWillMount(){
+    this._reset();
+  }
+
+  /**
+   * Generates the map, place the objects,...
+   *
+   * @param {promise-Callback} cb the callback that handles the promise
+   * @return {Promise}  Returns a promise
+   */
   _generate(){
-    var map=new MapGen;
-    map.init(this.props.options)
-    map.createMap();
-    map.createRooms();
-    map.removeSmallRooms(300);
+    return new Promise((resolve, reject)=>{
+      let error=false;
+      let map=new MapGen;
+      map.init(this.props.options)
+      map.createMap();
+      map.createRooms();
+      map.removeSmallRooms(300);
 
-    // This will be the initial state.
-    var obj={
-      messages:[],
-      vp:[],
-      startItems:[],
-      currentEnemy:null,
-      gameOver:false,
-      floorNb:-1
-    };
-
-    var player={};
-    if(this.props.playerStats){
-      player=this.props.playerStats;
-    }else{
-      player=Object.assign({}, DEFAULT_ITEM, {
-        name:'John',
-        description: 'You, with your funny hat of destruction.',
-        canMove:true,
-        className:'player',
-        stats: Object.assign({}, DEFAULT_STATS, this._levelStats(1)),
-      })
-    }
-
-    map.addItems({player: player}, true);
-
-    var walkableCells=map._getWalkableCells(false);
-    var walkableSafeCells=map._getWalkableCells(true);
-
-    var playerLevel=player.stats.level;
-    // Creating enemies
-    var enemies=new Object(this._createEnemies('enemy', playerLevel, walkableSafeCells.length, 2));
-    var boss=new Object(this._createBoss(playerLevel, 1));
-    map.addItems(enemies, true);
-    map.addItems(boss, true);
-
-    // Creating items
-    for(let i in ITEMS){
-      if(ITEMS[i].type=='item'){
-        let items=this._createItems(i, walkableSafeCells.length, 2);
-        map.addItems(items, true);
+      let player={};
+      if(this.props.playerStats){
+        player=this.props.playerStats;
+      }else{
+        player=Object.assign({}, DEFAULT_ITEM, {
+          name:'John',
+          description: 'You, with your funny hat of destruction.',
+          canMove:true,
+          className:'player',
+          stats: Object.assign({}, DEFAULT_STATS, this._levelStats(1)),
+        })
       }
-    }
 
-    obj.grid=map.grid;
-    obj.cells= map.cells;
-    obj.items=map.items;
-    return obj;
+      map.addItems({player: player}, true);
+
+      let walkableCells=map._getWalkableCells(false);
+      let walkableSafeCells=map._getWalkableCells(true);
+
+      let playerLevel=player.stats.level;
+      // Creating enemies
+      let enemies=new Object(this._createEnemies('enemy', playerLevel, walkableSafeCells.length, 2));
+      let boss=new Object(this._createBoss(playerLevel, 1));
+      map.addItems(enemies, true);
+      map.addItems(boss, true);
+
+      // Creating items
+      for(let i in ITEMS){
+        if(ITEMS[i].type=='item'){
+          let items=this._createItems(i, walkableSafeCells.length, 2);
+          map.addItems(items, true);
+        }
+      }
+
+      resolve ({
+        messages:[],
+        vp:[],
+        startItems:[],
+        currentEnemy:null,
+        gameOver:false,
+        loading:false,
+        mapLevel:-1,
+        mapName:this._mapName(),
+        grid:map.grid,
+        items:map.items,
+        cells:this._discoverAroundPlayer(map.items, map.grid, map.cells),
+        startItems:this._countItems(map.items),
+        vp:this._viewportGrid(map.grid, map.items),
+      });
+    });
   }
 
+  /**
+   * Generates a new map and resets this.state
+   */
   _reset(){
     this.setState({loading:true});
-    // Destroy
-    this.state.cells={};
-    this.state.items={};
-    this.state.startItems=[];
-    this.state.vp=[];
-    this.state.grid=[];
-    this.forceUpdate();
-    // Waiting for the state to be propagated
-    this.setState(this._generate());
-
-    // That's weird, that's the only way I found to execute the following code...
-    // As if there was a delay with setState... But it works with a timer of 0...
-    var timer=setInterval(()=>{
-        this._discoverAroundPlayer(true);
-        this.setState({gameOver:false, startItems:this._countItems(), vp:this._viewportGrid()});
-        this.setState({loading:false});
-        clearInterval(timer);
-    }, 0);
+    this._generate()
+      .then(map => this.setState(map))
+      .catch(error => console.error(error));
   }
 
-  _viewportGrid(){
-    var pos=this.state.items.player.position.split(':');
+  /**
+   * Generates an array representing the viewport (which portion of the map to be displayed)
+   * Use grid and items vars when you generate before the state is set.
+   *
+   * @param array grid - The grid from MapGen.grid. If null, will use the state grid.
+   * @param obj items - The object containing the items. If null, will use state items.
+   *
+   * @return array - An array similar to MapGen's grid, but smaller.
+   */
+  _viewportGrid(grid=null, items=null){
+    if(!grid){
+      grid=this.state.grid;
+    }
+    if(!items){
+      items=this.state.items;
+    }
+    var pos=items.player.position.split(':');
     var posX=pos[0]-Math.floor((this.props.vpSize-1)/2);
     var posY=pos[1]-Math.floor((this.props.vpSize-1)/2);
     var vp=[];
     if(posX < 0){posX=0};
-    if(posX > this.state.grid[0].length - this.props.vpSize){
-      posX = this.state.grid[0].length - this.props.vpSize
+    if(posX > grid[0].length - this.props.vpSize){
+      posX = grid[0].length - this.props.vpSize
     };
     if(posY < 0){posY=0};
-    if(posY > this.state.grid.length - this.props.vpSize){
-      posY = this.state.grid.length - this.props.vpSize;
+    if(posY > grid.length - this.props.vpSize){
+      posY = grid.length - this.props.vpSize;
     }
     for(let y=0; y<this.props.vpSize; y++){
       var row=[];
       for(let x=0; x<this.props.vpSize; x++){
         let nPos=(x+posX)+':'+(y+posY);
         let nY
-        row[x+posX]=(this.state.grid[y+posY][x+posX]);
+        row[x+posX]=(grid[y+posY][x+posX]);
       }
       vp[String(y+posY)]=row;
     }
     return vp;
   }
 
+  /**
+   * Creates a given number of bosses.
+   * The bosses level is higher than the playerLevel.
+   *
+   * @param int playerLevel - Player level to base to boss generation on
+   * @param int number - Number of bosses to return;
+   *
+   * @return an object of items like {boss_1:{boss object}, boss_2:{boss object},...}
+  */
   _createBoss(playerLevel, number){
     var bosses={};
     var bossStats={};
@@ -204,6 +231,13 @@ class App extends React.Component{
     return bosses;
   }
 
+  /**
+   * Generates stats for a character of a given level.
+   *
+   * @param int level - Level you want the char to be.
+   *
+   * @return {stats} - A stats object
+  */
   _levelStats(level){
     var stats={}
     // Base life:
@@ -226,10 +260,30 @@ class App extends React.Component{
     };
   }
 
+  /**
+   * Returns a character's level, given its experience. This is a very basic calculus
+   *
+   * @param int experience - Actual experience
+   *
+   * @return int - The character's level
+   */
   _determineLevel(experience){
     return(Math.floor(experience/10)+1);
   }
-
+  /**
+   * Creates ennemies.
+   * Ennemies have a small chance of being of a superior level
+   * The number will be a percent of walkable cells on the map
+   * The enemy name/description is from the global ENEMY_NAMES array
+   *
+   * @param string type - prefix for the items array. Can be any string you want.
+   * @param int playerLevel - Actual player level for stats generation
+   * @param int walkableCells - Number of walkable cells (get it with MapGen.getWalkableCells())
+   * @param float enemiesPercent - Percentage of ennemies to create
+   * @param int number - Override the percentage calculation and fixes the number to create
+   *
+   * @return {object} - A list like {type_1:{enemy obj}, type_2;{enemy obj}, ...}
+   */
   _createEnemies(type, playerLevel, walkableCells, enemiesPercent, number){
     // Number of enemies to generate:
     var nb=(number!=undefined)?number:Math.floor(enemiesPercent*walkableCells/100);
@@ -266,6 +320,17 @@ class App extends React.Component{
     return enemies;
   }
 
+  /**
+   * Creates items.
+   * The number will be a percent of walkable cells on the map
+   *
+   * @param string name - Item name from the ITEMS global array
+   * @param int walkableCells - Number of walkable cells (get it with MapGen.getWalkableCells())
+   * @param float percent - Percentage of items to create
+   * @param int number - Override the percentage calculation and fixes the number to create
+   *
+   * @return {object} - A list like {name_1:{item obj}, name_2;{item obj}, ...}
+   */
   _createItems(name, walkableCells, percent, number){
       var nb=0;
       var items={};
@@ -281,6 +346,17 @@ class App extends React.Component{
       return items;
   }
 
+  /**
+   * Handles the player's move, given the key pressed.
+   * This function handles the following events:
+   *   - Checks if player can go where he want,
+   *   - Initiate combat if any
+   *   - Handle item picking if any
+   *   - Move the enemies
+   *   - Update the state for all this.
+   *
+   * @param int keyCode - Key code
+   */
   _move(keyCode){
     if(this.state.gameOver){return false}
     var playerPos=this.state.items.player.position.split(':')
@@ -349,8 +425,7 @@ class App extends React.Component{
         }
         var items=this.state.items;
         items.player.position=nextPos;
-        this.setState({items:items});
-        this._discoverAroundPlayer(true);
+        this.setState({items:items, cells:this._discoverAroundPlayer()});
         var life=this._doDamages(this.state.cells[nextPos].type.damage, 'player');
         if(life==0){
           this._gameOver('You died, burnt by hot lava.');
@@ -374,6 +449,19 @@ class App extends React.Component{
     this.setState({items:items});
   }
 
+  /**
+   * Returns cells on which an ennemy can move. Enemies are clever, they won't
+   * walk on damaging cells.
+   *
+   * @param int x - Inital X position
+   * @param int y - Initial Y position
+   * @param {cells list} cells - Cell list
+   * @param {items list} items - Items list
+   * @param bool stillIfPlayer - If true, returns an empty array so the enemy
+   *                             don't move when the player is near it.
+   *
+   * @return array - An array of coordinates of empty cells like [[x1, y1], [x2, y2],...]
+   */
   _getWalkableCellsAround(x,y, grid, cells, items, stillIfPlayer){
     x=Number(x);
     y=Number(y);
@@ -417,23 +505,44 @@ class App extends React.Component{
     return results;
   }
 
+  /**
+   * Handles the plaer's death or success
+   *
+   * @param string msg - Message to display in log an on the gameOver panel.
+   */
   _gameOver(msg){
     this.setState({gameOver:true, endGameMessage:msg});
     this.conslog('system', '---');
     this._conslog('fatal', msg);
   }
 
-  _countItems(){
+  /**
+   * Counts items of each types and returns an array
+   *
+   * @param obj items - Items obj from MapGen. If null, will use this.state.items
+   *
+   * @return array - An array like ["className":number, "otherClassName":nb];
+  */
+  _countItems(items=null){
+    if(!items){items=this.state.items;}
     var out=[]
-    for(let i in this.state.items){
-      if(out[this.state.items[i].className]==undefined){
-        out[this.state.items[i].className]=0;
+    for(let i in items){
+      if(out[items[i].className]==undefined){
+        out[items[i].className]=0;
       }
-      out[this.state.items[i].className]++;
+      out[items[i].className]++;
     }
     return out;
   }
 
+  /**
+   * Engage combat with an enemy.
+   *   - Calculates who hit first
+   *   - hit
+   *   - If the other character is still alive, fight back.
+   *
+   * @param string target - Name of the target, to be found in state.items
+   */
   _combat(target){
     var pl=this.state.items.player;
     var tg=this.state.items[target];
@@ -461,14 +570,21 @@ class App extends React.Component{
     }
   }
 
+  /**
+   * Actually do damage to a character.
+   * - Handles death and state change in the items list
+   *
+   * @param int damage - Amount of damage
+   * @param string target - Name of targeted character in item list
+   *
+   * @return int - Character's life after taking the damages
+   */
   _doDamages(damage, target){
     if(damage>0){
       var items=this.state.items;
 
       // Eyecandy efect on target
       if(target=='player' || target==this.state.currentEnemy){
-        //var pos=items[target].position.split(':');
-
         var div='#target-'+(target=='player'?'player':'enemy');
         $(div).css('backgroundColor', 'rgba(200, 0, 0,0.5)');
         var interval=setInterval(function () {
@@ -495,6 +611,16 @@ class App extends React.Component{
     return this.state.items[target].stats.life;
   }
 
+  /**
+   * Attack a target and manage resulting state:
+   *   - Xp gain for player
+   *   - Death of player
+   *
+   * @param string attacker - Attacker identifier in this.state.items
+   * @param string target - Target identifier in this.state.items
+   *
+   * @return bool - True on target's death, otherwise false.
+   */
   _doAttack(attacker, target){
     // Copy some values:
     var tName=this.state.items[target].name;
@@ -539,13 +665,28 @@ class App extends React.Component{
     return false;
   }
 
-  _calcDamages(first, second){
-    var f=this.state.items[first].stats;
-    var s=this.state.items[second].stats;
+  /**
+   * Calculates the damages an attacker do on a target
+   * @todo Add a failing possibility percentage
+   *
+   * @param string attacker - Attacker identifier in this.state.items
+   * @param string target - Target identifier in this.state.items
+   *
+   * @return int - The amount of damage
+   */
+  _calcDamages(attacker, target){
+    var f=this.state.items[attacker].stats;
+    var s=this.state.items[target].stats;
     // Calculates the damage
     return Math.ceil(((10+f.strength)/10)*f.damage-s.armor);
   }
 
+  /**
+   * Adds messages to the quest log
+   *
+   * @param string type - Message type (info, success, danger fatal)
+   * @param string message - The message. use '---' to create a separator
+   */
   _conslog(type, message){
     var messages=this.state.messages
     if(message=='---'){
@@ -556,14 +697,23 @@ class App extends React.Component{
     this.setState({messages:messages});
   }
 
-  _discoverAroundPlayer(updateState){
-    var position=this.state.items.player.position;
+  /**
+   * Changes the discovered property of cells around player.
+   *
+   * @param object items - Object containing the items, from MapGen. If null, will use state.items.
+   * @param array grid - Grid from MapGen.If null, will use state.grid.
+   * @param object cells - Object containing cells from MapGen. If null, will use state.cells.
+   */
+  _discoverAroundPlayer(items=null, grid=null, cells=null){
+    if(!items){items=this.state.items;}
+    if(!grid){grid=this.state.grid;}
+    if(!cells){cells=this.state.cells;}
+    var position=items.player.position;
     var playerPos=position.split(':')
     var playerX=Number(playerPos[0]);
     var playerY=Number(playerPos[1]);
-    var mapWidth=this.state.grid[0].length;
-    var mapHeight=this.state.grid.length;
-    var cellCopy=this.state.cells;
+    var mapWidth=grid[0].length;
+    var mapHeight=grid.length;
 
     var matrix=[
                     [-1,-3], [ 0,-3], [ 1,-3],
@@ -578,41 +728,65 @@ class App extends React.Component{
       let newX=playerX+matrix[i][0];
       let newY=playerY+matrix[i][1];
       if(newX>=0 && newX<=mapWidth-1 && newY>=0 && newY<=mapHeight-1){
-        cellCopy[newX+':'+newY].discovered=true;
+        cells[newX+':'+newY].discovered=true;
       }
     }
-    if(updateState===true){
-      this.setState({cells:cellCopy});
-    }else{
-      return cellCopy;
-    }
+    return cells;
   }
 
+  /**
+   * Update player's stat when i picks a life potion
+   */
   _potion_life(){
     var quantity=50;
     var items=this.state.items;
     items['player'].stats.life=(items['player'].stats.life+quantity>items['player'].stats.totalLife?items['player'].stats.totalLife:items['player'].stats.life+quantity);
     this.setState({items:items});
   }
+  /**
+   * Update player's stat when i picks an armor token
+   */
   _token_armor(){
     var items=this.state.items;
     items['player'].stats.armor+=1;
     this.setState({items:items});
   }
+  /**
+   * Update player's stat when i picks a damage token
+   */
   _token_damage(){
     var items=this.state.items;
     items['player'].stats.damage+=1;
     this.setState({items:items});
   }
+  /**
+   * Update player's stat when i picks a strength token
+   */
   _token_strength(){
     var items=this.state.items;
     items['player'].stats.strength+=1;
     this.setState({items:items});
   }
+  /**
+   * Update player's stat when i picks a celerity token
+   */
   _token_celerity(){
     var items=this.state.items;
     items['player'].stats.celerity+=1;
     this.setState({items:items});
+  }
+
+  /**
+   * Generates a map name
+   *
+   * @return string - A wonderful map name
+   */
+  _mapName(){
+    var adj=MAP_NAME_ADJECTIVES[Math.floor(Math.random()*MAP_NAME_ADJECTIVES.length)];
+    var noun=MAP_NAME_NOUNS[Math.floor(Math.random()*MAP_NAME_NOUNS.length)];
+    var adverb=MAP_NAME_ADVERBS[Math.floor(Math.random()*MAP_NAME_ADVERBS.length)];
+
+    return adj + ' ' + noun + ' of ' + adverb;
   }
 }
 
@@ -622,6 +796,11 @@ class App extends React.Component{
 GAME CONSTANTS FOR INITIAL generation
 
 */
+// Some names for level naming
+const MAP_NAME_ADJECTIVES=['Dark', 'Scealled', 'Obscure', 'Final', 'Chaotic', 'Rancid', 'Moldy', 'Hellish'];
+const MAP_NAME_NOUNS=['floor', 'cave', 'den', 'lair', 'cavern'];
+const MAP_NAME_ADVERBS=['destruction', 'sorrow', 'chaos', 'Cthulhu', 'famine', 'death', 'pain', 'Doom', 'Hell'];
+
 const DEFAULT_PLAYER_STATS={life:50, totalLife:50, damage:10, strength:1, armor:1, level:1, celerity:1, experience:0,};
 
 const DEFAULT_ITEM={
@@ -665,10 +844,8 @@ const BOSS_NAMES=[
   {name:'Freddy Kruegger', description:'Fred "Freddy" Krueger is the main antagonist of the A Nightmare on Elm Street film series. He first appeared in Wes Craven\'s A Nightmare on Elm Street as a burnt serial killer who uses a glove armed with razors to kill his victims in their dreams', more:'http://www.ranker.com/review/freddy-krueger/1022376?ref=name_320416'},
 ];
 
-// Some enemies : bacterias and fungis
+// Some enemies :
 const ENEMY_NAMES=[
-  // Lazy me... http://alltoptens.com/top-ten-most-dangerous-bacteria-on-earth/
-  // This list was completed with wikipedia articles and some names has been changed or removed when info wasn't clear enough.
   {name:'Gloom Lad', description:'I have all the characteristics of a human being: blood, flesh, skin, hair; but not a single, clear, identifiable emotion, except for greed and disgust.', more:null},
   {name:'Killer Woman', description:'I visited your home this morning after you\'d left. I tried to play husband. I tried to taste the life of a simple man. It didn\'t work out, so I took a souvenir... her pretty head.', more:null},
   {name:'Master Man', description:'The point is ladies and gentlemen that greed, for lack of a better word, is good.', more:null},

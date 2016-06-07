@@ -115,6 +115,12 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
   p{
     margin: $margin-sm $margin-lg;
   }
+  .info{
+    float:right;
+    font-size: 1.2em;
+    font-weight:bold;
+    color:darken($blue-border-color, 30%);
+  }
 }
 #menu{
   width:250px;
@@ -155,6 +161,20 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
   }
 }
 
+#mapName{
+  margin-left:$margin-lg;
+  text-align:center;
+  font-size:1.5em;
+  font-weight: bold
+  small{
+    display:block;
+    text-align: center;
+    font-size:1em;
+  }
+}
+#infoMessage{
+  margin-bottom:$margin-lg;
+}
 .avatar{
   border:1px solid $border-color;
   border-bottom-width: $radius-sm;
