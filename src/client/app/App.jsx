@@ -6,89 +6,118 @@ import MapInfos from './MapInfos.jsx';
 import EnemyInfos from './EnemyInfos.jsx';
 import QuestLog from './QuestLog.jsx';
 import Grid from './Grid.jsx';
+import Reset from './Reset.jsx';
 
 import MapGen from './data/MapGen.jsx';
 
 class App extends React.Component{
   render(){
-    return(
-      <div>
-        <MapInfos items={this._countItems()} orig={this.state.startItems}/>
-        <div id="main">
-          <div id="menu">
-            <PlayerStats
-              name={this.state.items['player'].name}
-              description={this.state.items['player'].description}
-              link={this.state.items['player'].link}
-              level={this.state.items['player'].stats.level}
-              life={this.state.items['player'].stats.life}
-              totalLife={this.state.items['player'].stats.totalLife}
-              experience={this.state.items['player'].stats.experience}
-              damage={this.state.items['player'].stats.damage}
-              strength={this.state.items['player'].stats.strength}
-              armor={this.state.items['player'].stats.armor}
-              celerity={this.state.items['player'].stats.celerity}
+    if(this.state.loading){
+      return (<div id="loading"></div>);
+    }else{
+      return(
+        <div>
+          <MapInfos items={this._countItems()} orig={this.state.startItems}/>
+          <div id="main">
+            <div id="menu">
+              <PlayerStats
+                name={this.state.items['player'].name}
+                description={this.state.items['player'].description}
+                link={this.state.items['player'].link}
+                level={this.state.items['player'].stats.experience!=null?this._determineLevel(this.state.items['player'].stats.experience):''}
+                life={this.state.items['player'].stats.life}
+                totalLife={this.state.items['player'].stats.totalLife}
+                experience={this.state.items['player'].stats.experience}
+                damage={this.state.items['player'].stats.damage}
+                strength={this.state.items['player'].stats.strength}
+                armor={this.state.items['player'].stats.armor}
+                celerity={this.state.items['player'].stats.celerity}
+                />
+              <EnemyInfos
+                level={this.state.currentEnemy!=null?this._determineLevel(this.state.items[this.state.currentEnemy].stats.experience):null}
+                name={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].name:null}
+                description={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].description:null}
+                link={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].more:null}
+                stats={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].stats:null}
+                className={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].className:null}
+                />
+            </div>
+            <div id="game">
+              <Grid
+                gridWidth={this.state.grid[0].length}
+                gridHeight={this.state.grid[1].length}
+                grid={this.state.vp}
+                cells={this.state.cells}
+                items={this.state.items}
               />
-            <EnemyInfos
-              level={this.state.currentEnemy!=null?this._determineLevel(this.state.items[this.state.currentEnemy].stats.experience):null}
-              name={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].name:null}
-              description={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].description:null}
-              link={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].more:null}
-              stats={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].stats:null}
-              className={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].className:null}
-              />
-          </div>
-          <div id="game">
-            <Grid
-              gridWidth={this.state.grid[0].length}
-              gridHeight={this.state.grid[1].length}
-              grid={this.state.vp}
-              cells={this.state.cells}
-              items={this.state.items}
-            />
-          </div>
-          <div>
-            <QuestLog messages={this.state.messages}/>
+            </div>
+            <div>
+              <QuestLog messages={this.state.messages}/>
+            </div>
+            <div>
+              <Reset gameOver={this.state.gameOver} reset={this._reset} message={this.state.endGameMessage}/>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 
   constructor(props){
     super(props);
-    this.state={
+
+    this.state=this._generate();
+    // Calculates cells around the player
+    this.state.cells=this._discoverAroundPlayer(false);
+    // Calculates the content of the viewport
+    this.state.vp=this._viewportGrid();
+    // Count the items
+    this.state.startItems=this._countItems();
+    this.state.loading=false;
+
+    this._reset=this._reset.bind(this);
+
+  }
+
+  _generate(){
+    var map=new MapGen;
+    map.init(this.props.options)
+    map.createMap();
+    map.createRooms();
+    map.removeSmallRooms(300);
+
+    // This will be the initial state.
+    var obj={
       messages:[],
       vp:[],
       startItems:[],
       currentEnemy:null,
       gameOver:false,
-    }
-    var map=new MapGen;
-    map.init(this.props.options)
-    map.createMap();
+      floorNb:-1
+    };
 
-    map.createRooms();
-    map.removeSmallRooms(300);
+    var player={};
+    if(this.props.playerStats){
+      player=this.props.playerStats;
+    }else{
+      player=Object.assign({}, DEFAULT_ITEM, {
+        name:'John',
+        description: 'You, with your funny hat of destruction.',
+        canMove:true,
+        className:'player',
+        stats: Object.assign({}, DEFAULT_STATS, this._levelStats(1)),
+      })
+    }
+
+    map.addItems({player: player}, true);
 
     var walkableCells=map._getWalkableCells(false);
     var walkableSafeCells=map._getWalkableCells(true);
 
-    map.addItems({
-      player: Object.assign({}, DEFAULT_ITEM, {
-        name:'Leukocyt',
-        description: 'You, a white globule',
-        canMove:true,
-        stats: Object.assign({}, DEFAULT_STATS, this._levelStats(1)),
-        className:'player'
-      })
-    }, true);
-
-    var playerStats=DEFAULT_PLAYER_STATS;//map.items.player.stats;
-
+    var playerLevel=player.stats.level;
     // Creating enemies
-    var enemies=new Object(this._createEnemies('enemy', playerStats, walkableSafeCells.length, 2));
-    var boss=new Object(this._createBoss(playerStats, 1));
+    var enemies=new Object(this._createEnemies('enemy', playerLevel, walkableSafeCells.length, 2));
+    var boss=new Object(this._createBoss(playerLevel, 1));
     map.addItems(enemies, true);
     map.addItems(boss, true);
 
@@ -100,12 +129,32 @@ class App extends React.Component{
       }
     }
 
-    this.state.cells=map.cells;
-    this.state.items=map.items;
-    this.state.grid=map.grid;
-    this.state.cells=this._discoverAroundPlayer(false);
-    this.state.vp=this._viewportGrid();
-    this.state.startItems=this._countItems();
+    obj.grid=map.grid;
+    obj.cells= map.cells;
+    obj.items=map.items;
+    return obj;
+  }
+
+  _reset(){
+    this.setState({loading:true});
+    // Destroy
+    this.state.cells={};
+    this.state.items={};
+    this.state.startItems=[];
+    this.state.vp=[];
+    this.state.grid=[];
+    this.forceUpdate();
+    // Waiting for the state to be propagated
+    this.setState(this._generate());
+
+    // That's weird, that's the only way I found to execute the following code...
+    // As if there was a delay with setState... But it works with a timer of 0...
+    var timer=setInterval(()=>{
+        this._discoverAroundPlayer(true);
+        this.setState({gameOver:false, startItems:this._countItems(), vp:this._viewportGrid()});
+        this.setState({loading:false});
+        clearInterval(timer);
+    }, 0);
   }
 
   _viewportGrid(){
@@ -133,13 +182,13 @@ class App extends React.Component{
     return vp;
   }
 
-  _createBoss(basePlayerStats, number){
+  _createBoss(playerLevel, number){
     var bosses={};
     var bossStats={};
     for (let i=0; i<number; i++){
       let boss=BOSS_NAMES[Math.floor(Math.random()*BOSS_NAMES.length)];
 
-      bossStats=this._levelStats(basePlayerStats.level+5);
+      bossStats=this._levelStats(playerLevel+5);
 
       bosses['boss_'+i]=Object.assign({}, DEFAULT_ITEM, {
         name:boss.name,
@@ -181,7 +230,7 @@ class App extends React.Component{
     return(Math.floor(experience/10)+1);
   }
 
-  _createEnemies(type, basePlayerStats, walkableCells, enemiesPercent, number){
+  _createEnemies(type, playerLevel, walkableCells, enemiesPercent, number){
     // Number of enemies to generate:
     var nb=(number!=undefined)?number:Math.floor(enemiesPercent*walkableCells/100);
 
@@ -194,13 +243,13 @@ class App extends React.Component{
       // Generate random states
       var randomGen=Math.floor(Math.random()*101);
       if(randomGen<80){
-        enemyStats=this._levelStats(basePlayerStats.level);
+        enemyStats=this._levelStats(playerLevel);
       }else if (randomGen<80) {
-        enemyStats=this._levelStats(basePlayerStats.level+1);
+        enemyStats=this._levelStats(playerLevel+1);
       }else if(randomGen<95) {
-        enemyStats=this._levelStats(basePlayerStats.level+2);
+        enemyStats=this._levelStats(playerLevel+2);
       }else{
-        enemyStats=this._levelStats(basePlayerStats.level+3);
+        enemyStats=this._levelStats(playerLevel+3);
       }
       enemies[type+'_'+i]=Object.assign({}, DEFAULT_ITEM, {
         name:enemy.name,
@@ -295,6 +344,9 @@ class App extends React.Component{
         }
       }
       if(!preventMove){
+        if(this.state.currentEnemy!=null){
+          this.setState({currentEnemy:null});
+        }
         var items=this.state.items;
         items.player.position=nextPos;
         this.setState({items:items});
@@ -306,10 +358,68 @@ class App extends React.Component{
         this.setState({vp:this._viewportGrid()});
       }
     }
+    // Move ennemies
+    var items=this.state.items;
+    for(let i in this.state.items){
+      if(this.state.items[i].canMove && i!=this.state.currentEnemy && i!='player'){
+        var pos=this.state.items[i].position.split(':')
+        var possibilities=this._getWalkableCellsAround(pos[0],pos[1], null, null, items, true);
+        //console.log(possibilities);
+        if(possibilities.length>0){
+          var newPos=possibilities[Math.floor(Math.random()*possibilities.length)];
+          items[i].position=newPos[0]+':'+newPos[1];
+        }
+      }
+    }
+    this.setState({items:items});
+  }
+
+  _getWalkableCellsAround(x,y, grid, cells, items, stillIfPlayer){
+    x=Number(x);
+    y=Number(y);
+    // Don't move if the player is around.
+    if(!stillIfPlayer){
+      stillIfPlayer=false;
+    }
+    if(!grid){
+      grid=this.state.grid;
+    }
+    if(!cells){
+      cells=this.state.cells;
+    }
+    if(!items){
+      items=this.state.items;
+    }
+    var inside=[ [x-1, y], [x+1, y], [x, y-1], [x, y+1] ];
+    var results=[];
+    // Looking around
+    for(let i in inside){
+      let newX=inside[i][0];
+      let newY=inside[i][1];
+      if(newX>=0 && newY>=0 && newX<grid[0].length && newY<grid.length){
+        if(cells[newX+':'+newY].type.isWalkable === true && cells[newX+':'+newY].type.damage<=0){
+          var nb=0;
+          for(let j in items){
+            if(items[j].position==newX+':'+newY){
+              nb++;
+              if(j == 'player' && stillIfPlayer){
+                // don't Move
+                return [];
+              }
+            }
+          }
+          if(nb==0){
+            results.push(inside[i]);
+          }
+        }
+      }
+    }
+    return results;
   }
 
   _gameOver(msg){
-    this.setState({gameOver:true});
+    this.setState({gameOver:true, endGameMessage:msg});
+    this.conslog('system', '---');
     this._conslog('fatal', msg);
   }
 
@@ -512,7 +622,7 @@ class App extends React.Component{
 GAME CONSTANTS FOR INITIAL generation
 
 */
-const DEFAULT_PLAYER_STATS={life:50, totalLife:50, damage:10, strength:1, armor:1, level:1, celerity:1};
+const DEFAULT_PLAYER_STATS={life:50, totalLife:50, damage:10, strength:1, armor:1, level:1, celerity:1, experience:0,};
 
 const DEFAULT_ITEM={
   name:'NO NAME',
@@ -549,34 +659,34 @@ const ITEMS={
 
 // Some bosses :
 const BOSS_NAMES=[
-  {name:'Acará virus', description:'The Acará virus (ACAV) is a possible species in the genus Bunyavirus, belonging to the Capim serogroup. It is isolated from sentinel mice, Culex species, and the rodent Nectomys squamipes in Para, Brazil and in Panama. The symptoms of the Acará virus is death. Sometimes reported to cause disease in humans.', more:'https://en.wikipedia.org/wiki/Acar%C3%A1_virus'},
-  {name:'Banana virus X', description:'Cafeteria roenbergensis virus (CroV) is a giant virus that infects the marine bicosoecid flagellate Cafeteria roenbergensis. CroV has one of the largest genomes of all marine virus known, consisting of ~730,000 base pairs of double-stranded DNA', more:'https://en.wikipedia.org/wiki/Cafeteria_roenbergensis_virus'},
-  {name:'Mokola virus', description:'Mokola virus (MOKV) is a RNA virus related to the Rabies virus that has been sporadically isolated from mammals across sub-Saharan Africa. The majority of isolates have come from domestic cats exhibiting symptoms characteristically associated to Rabies virus infection.', more:'https://en.wikipedia.org/wiki/Mokola_virus'},
-  {name:'Nipah Virus', description:'Nipah virus was identified in April 1999, when it caused an outbreak of neurological and respiratory disease on pig farms in peninsular Malaysia, resulting in 257 human cases, including 105 human deaths and the culling of one million pigs.', more:'https://en.wikipedia.org/wiki/Henipavirus#Nipah_virus'},
+  {name:'Joker', description:'The Joker is a fictional supervillain who appears in American comic books published by DC Comics. The character was created by Jerry Robinson, Bill Finger, and Bob Kane, and first appeared in Batman #1.', more:'http://www.ranker.com/review/joker/2498261?ref=name_320416'},
+  {name:'Hannibal Lecter', description:'Dr. Hannibal Lecter is a character in a series of suspense novels by Thomas Harris. Lecter was introduced in the 1981 thriller novel Red Dragon as a forensic psychiatrist and cannibalistic serial killer.', more:'http://www.ranker.com/review/hannibal-lecter/1125580?ref=name_320416'},
+  {name:'Jack Torrence', description:'John Daniel "Jack" Torrance is a fictional character in the 1977 novel The Shining by Stephen King.', more:'http://www.ranker.com/review/jack-torrance/1254047?ref=name_320416'},
+  {name:'Freddy Kruegger', description:'Fred "Freddy" Krueger is the main antagonist of the A Nightmare on Elm Street film series. He first appeared in Wes Craven\'s A Nightmare on Elm Street as a burnt serial killer who uses a glove armed with razors to kill his victims in their dreams', more:'http://www.ranker.com/review/freddy-krueger/1022376?ref=name_320416'},
 ];
 
 // Some enemies : bacterias and fungis
 const ENEMY_NAMES=[
   // Lazy me... http://alltoptens.com/top-ten-most-dangerous-bacteria-on-earth/
   // This list was completed with wikipedia articles and some names has been changed or removed when info wasn't clear enough.
-  {name:'Escherichia coli', description:'Virulent strains can cause gastroenteritis, urinary tract infections, and neonatal meningitis. It can also be characterized by severe abdominal cramps, diarrhea that typically turns bloody within 24 hours, and sometimes fever.', more:'https://en.wikipedia.org/wiki/Escherichia_coli'},
-  {name:'Clostridium Botulinum', description:'Infection with the bacterium may result in a potentially fatal disease called botulism. Botulinum is the most acutely lethal toxin known, with an estimated human median lethal dose (LD50) of 1.3–2.1 ng/kg intravenously or intramuscularly and 10–13 ng/kg when inhaled.', more:'https://en.wikipedia.org/wiki/Botulinum_toxin'},
-  {name:'Salmonella', description:'Strains of Salmonella cause illnesses such as typhoid fever, paratyphoid fever, and food poisoning (salmonellosis).', more:'https://en.wikipedia.org/wiki/Salmonella'},
-  {name:'Vibrio cholera', description:'Cholera affects an estimated 3–5 million people worldwide and causes 58,000–130,000 deaths a year as of 2010.While it is currently classified as a pandemic, it is rare in the developed world. Children are mostly affected.', more:'https://en.wikipedia.org/wiki/Cholera'},
-  {name:'Clostridium tetani', description:'Tetanus toxin is a potent neurotoxin. On the basis of weight, tetanospasmin is one of the most potent toxins known (based on tests conducted on mice). The estimated minimum human lethal dose is 2.5 nanograms per kilogram of body weight, or 175 nanograms in a 70 kg (154 lb) human.', more:'https://en.wikipedia.org/wiki/Clostridium_tetani'},
-  {name:'Aspergillus fumigatus', description:'An ubiquitous organism that is capable of living under extensive environmental stress. It is estimated that most humans inhale thousands of Aspergillus spores daily, but they do not affect most people’s health due to effective immune responses. Taken together, the major chronic, invasive and allergic forms of aspergillosis account for around 600,000 deaths annually worldwide.', more:'https://en.wikipedia.org/wiki/Aspergillosis'},
-  {name:'Treponema pallidum', description:'Treponema pallidum is a spirochaete bacterium with subspecies that cause treponemal diseases such as syphilis, bejel, pinta, and yaws. The treponemes have a cytoplasmic and an outer membrane. Using light microscopy, treponemes are only visible using dark field illumination.', more:'https://en.wikipedia.org/wiki/Treponema_pallidum'},
-  {name:'Streptococcus', description:'In addition to streptococcal pharyngitis (strep throat), certain Streptococcus species are responsible for many cases of pink eye, meningitis, bacterial pneumonia, endocarditis, erysipelas, and necrotizing fasciitis (the \'flesh-eating\' bacterial infections).', more:'https://en.wikipedia.org/wiki/Streptococcus'},
-  {name:'Mycobacterium tuberculosis', description:'Tuberculosis generally affects the lungs, but can also affect other parts of the body. Most infections do not have symptoms, known as latent tuberculosis. About 10% of latent infections progress to active disease which, if left untreated, kills about half of those infected.', more:'https://en.wikipedia.org/wiki/Tuberculosis'},
+  {name:'Gloom Lad', description:'I have all the characteristics of a human being: blood, flesh, skin, hair; but not a single, clear, identifiable emotion, except for greed and disgust.', more:null},
+  {name:'Killer Woman', description:'I visited your home this morning after you\'d left. I tried to play husband. I tried to taste the life of a simple man. It didn\'t work out, so I took a souvenir... her pretty head.', more:null},
+  {name:'Master Man', description:'The point is ladies and gentlemen that greed, for lack of a better word, is good.', more:null},
+  {name:'Necrotic Murderer', description:'Human beings are a disease, a cancer of this planet. You\'re a plague and we are the cure.', more:null},
+  {name:'Sickness Master', description:'I\'m going to do something now they used to do in Vietnam. It\'s called making a head on a stick.', more:null},
+  {name:'Viral Shade', description:'If Mr. McMurphy doesn\'t want to take his medication orally, I\'m sure we can arrange that he can have it some other way. But I don\'t think that he would like it.', more:null},
 ];
 const MAP_OPTIONS={x:5, y:5, passes:3, cleanLevel:5, wallPercent:10, sameSubCellPercent:80, cssPrefix:'map-', cellTypes:CELL_TYPES};
 
-var appRendered=render(<App options={MAP_OPTIONS} vpSize='15'/>, document.getElementById('app'));
+var appRendered=render(<App options={MAP_OPTIONS} startLevel='1' newGame={true} playerStats={null} vpSize='15'/>, document.getElementById('app'));
 
-$(document).keyup(function(e) {
+$(document).keydown(function(e) {
   if([37,38,39,40].indexOf(e.keyCode)>-1){
+    e.preventDefault();
     appRendered._move(e.keyCode);
     var element = document.getElementById("questLog");
     element.scrollTop = element.scrollHeight;
+    return false;
   }
+  return true;
 });

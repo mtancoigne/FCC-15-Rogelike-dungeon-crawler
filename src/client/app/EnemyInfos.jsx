@@ -58,12 +58,12 @@ class EnemyInfos extends React.Component{
             </p>
           </div>
         </div>
-        <a
+        {this.props.more!=null?(<a
           className={"btn"+(this.props.name==null?' disabled':'')}
           href={link}
           target="_blank">
           More infos...
-        </a>
+        </a>):''}
         <table>
           <tbody>
             <tr>

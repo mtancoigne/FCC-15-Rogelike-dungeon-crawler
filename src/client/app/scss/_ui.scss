@@ -118,11 +118,6 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 }
 #menu{
   width:250px;
-  .btn{
-    display: block;
-    width:100%;
-    margin-bottom: $margin-sm;
-  }
 }
 
 #menu, #game{
@@ -148,6 +143,15 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
       margin-bottom:$margin-sm;
       color:darken($font-color, 10%);
     }
+  }
+}
+
+#reset{
+  padding:$padding-lg;
+  p{
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-align: center;
   }
 }
 
@@ -211,6 +215,12 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
     border-bottom-width: 1px;
     background-color:lighten($border-color, 10%);
   }
+}
+
+.btn-block{
+  display: block;
+  width:100%;
+  margin-bottom: $margin-sm;
 }
 
 .disabled{
@@ -303,4 +313,30 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 #target-player flash, #target-enemy flash{
   @extend .red;
   transition-duration: .2s;
+}
+#reset{
+  position:absolute;
+  padding:$padding-lg;
+  top: 50%;
+  left: 50%;
+  min-width: 300px;
+  transform: translateY(-50%);
+  transform: translateX(-50%);
+  .btn{
+    padding:2*$padding-lg;
+    font-size:2em;
+    border-bottom-width:5px;
+    border-color: darken($green-border-color, 20%);
+    background-color:$green-border-color;
+    color:darken($green-border-color, 30%);
+  }
+}
+.overlay {
+  position: absolute;
+  min-width: 100%;
+  min-height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0,0,0, 0.5);
+  display: block;
 }
