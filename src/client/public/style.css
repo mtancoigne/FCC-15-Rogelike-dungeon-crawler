@@ -448,412 +448,412 @@ tr:nth-child(even) {
 
 /* Rooms */
 .map-cell-room-0 {
-  background-color: #81e0bb; }
+  background-color: #e475c4; }
 
 .map-room-0-overlay {
-  background-color: rgba(129, 224, 187, 0.5);
-  color: #32c98e;
-  border: 1px solid #32c98e; }
+  background-color: rgba(228, 117, 196, 0.5);
+  color: #cb289c;
+  border: 1px solid #cb289c; }
 
 .map-cell-room-1 {
-  background-color: #c87786; }
+  background-color: #f4c9e5; }
 
 .map-room-1-overlay {
-  background-color: rgba(200, 119, 134, 0.5);
-  color: #9b3e50;
-  border: 1px solid #9b3e50; }
+  background-color: rgba(244, 201, 229, 0.5);
+  color: #e374bc;
+  border: 1px solid #e374bc; }
 
 .map-cell-room-2 {
-  background-color: #dea2fc; }
+  background-color: #67aa65; }
 
 .map-room-2-overlay {
-  background-color: rgba(222, 162, 252, 0.5);
-  color: #bb3ff9;
-  border: 1px solid #bb3ff9; }
+  background-color: rgba(103, 170, 101, 0.5);
+  color: #3e6d3c;
+  border: 1px solid #3e6d3c; }
 
 .map-cell-room-3 {
-  background-color: #cbd9be; }
+  background-color: #e593a9; }
 
 .map-room-3-overlay {
-  background-color: rgba(203, 217, 190, 0.5);
-  color: #98b37e;
-  border: 1px solid #98b37e; }
+  background-color: rgba(229, 147, 169, 0.5);
+  color: #d14168;
+  border: 1px solid #d14168; }
 
 .map-cell-room-4 {
-  background-color: #b8e0e5; }
+  background-color: #b76fd3; }
 
 .map-room-4-overlay {
-  background-color: rgba(184, 224, 229, 0.5);
-  color: #6dbfca;
-  border: 1px solid #6dbfca; }
+  background-color: rgba(183, 111, 211, 0.5);
+  color: #8833a9;
+  border: 1px solid #8833a9; }
 
 .map-cell-room-5 {
-  background-color: #aae3cc; }
+  background-color: #e7adec; }
 
 .map-room-5-overlay {
-  background-color: rgba(170, 227, 204, 0.5);
-  color: #5dca9e;
-  border: 1px solid #5dca9e; }
+  background-color: rgba(231, 173, 236, 0.5);
+  color: #cf5ad9;
+  border: 1px solid #cf5ad9; }
 
 .map-cell-room-6 {
-  background-color: #95b576; }
+  background-color: #91ddde; }
 
 .map-room-6-overlay {
-  background-color: rgba(149, 181, 118, 0.5);
-  color: #628045;
-  border: 1px solid #628045; }
+  background-color: rgba(145, 221, 222, 0.5);
+  color: #43c5c6;
+  border: 1px solid #43c5c6; }
 
 .map-cell-room-7 {
-  background-color: #cbf39d; }
+  background-color: #866c9e; }
 
 .map-room-7-overlay {
-  background-color: rgba(203, 243, 157, 0.5);
-  color: #9be842;
-  border: 1px solid #9be842; }
+  background-color: rgba(134, 108, 158, 0.5);
+  color: #534163;
+  border: 1px solid #534163; }
 
 .map-cell-room-8 {
-  background-color: #e07b88; }
+  background-color: #9b71a6; }
 
 .map-room-8-overlay {
-  background-color: rgba(224, 123, 136, 0.5);
-  color: #c62f42;
-  border: 1px solid #c62f42; }
+  background-color: rgba(155, 113, 166, 0.5);
+  color: #64446d;
+  border: 1px solid #64446d; }
 
 .map-cell-room-9 {
-  background-color: #c0bcb2; }
+  background-color: #d0a3eb; }
 
 .map-room-9-overlay {
-  background-color: rgba(192, 188, 178, 0.5);
-  color: #928b7a;
-  border: 1px solid #928b7a; }
+  background-color: rgba(208, 163, 235, 0.5);
+  color: #a54fd9;
+  border: 1px solid #a54fd9; }
 
 .map-cell-room-10 {
-  background-color: #f8beab; }
+  background-color: #a6fcb2; }
 
 .map-room-10-overlay {
-  background-color: rgba(248, 190, 171, 0.5);
-  color: #f0754d;
-  border: 1px solid #f0754d; }
+  background-color: rgba(166, 252, 178, 0.5);
+  color: #43f95d;
+  border: 1px solid #43f95d; }
 
 .map-cell-room-11 {
-  background-color: #9bd1ab; }
+  background-color: #ea89d1; }
 
 .map-room-11-overlay {
-  background-color: rgba(155, 209, 171, 0.5);
-  color: #55b170;
-  border: 1px solid #55b170; }
+  background-color: rgba(234, 137, 209, 0.5);
+  color: #db32af;
+  border: 1px solid #db32af; }
 
 .map-cell-room-12 {
-  background-color: #c56ead; }
+  background-color: #aea47d; }
 
 .map-room-12-overlay {
-  background-color: rgba(197, 110, 173, 0.5);
-  color: #923b7a;
-  border: 1px solid #923b7a; }
+  background-color: rgba(174, 164, 125, 0.5);
+  color: #79704c;
+  border: 1px solid #79704c; }
 
 .map-cell-room-13 {
-  background-color: #9bed8f; }
+  background-color: #cffbda; }
 
 .map-room-13-overlay {
-  background-color: rgba(155, 237, 143, 0.5);
-  color: #4ddf37;
-  border: 1px solid #4ddf37; }
+  background-color: rgba(207, 251, 218, 0.5);
+  color: #71f391;
+  border: 1px solid #71f391; }
 
 .map-cell-room-14 {
-  background-color: #fa65f1; }
+  background-color: #67c168; }
 
 .map-room-14-overlay {
-  background-color: rgba(250, 101, 241, 0.5);
-  color: #f108e3;
-  border: 1px solid #f108e3; }
+  background-color: rgba(103, 193, 104, 0.5);
+  color: #388a39;
+  border: 1px solid #388a39; }
 
 .map-cell-room-15 {
-  background-color: #eedb81; }
+  background-color: #d7b292; }
 
 .map-room-15-overlay {
-  background-color: rgba(238, 219, 129, 0.5);
-  color: #e2c127;
-  border: 1px solid #e2c127; }
+  background-color: rgba(215, 178, 146, 0.5);
+  color: #bc7d47;
+  border: 1px solid #bc7d47; }
 
 .map-cell-room-16 {
-  background-color: #b17ad5; }
+  background-color: #e27e9f; }
 
 .map-room-16-overlay {
-  background-color: rgba(177, 122, 213, 0.5);
-  color: #8138b1;
-  border: 1px solid #8138b1; }
+  background-color: rgba(226, 126, 159, 0.5);
+  color: #cc2e62;
+  border: 1px solid #cc2e62; }
 
 .map-cell-room-17 {
-  background-color: #c198a0; }
+  background-color: #77d6a1; }
 
 .map-room-17-overlay {
-  background-color: rgba(193, 152, 160, 0.5);
-  color: #985b67;
-  border: 1px solid #985b67; }
+  background-color: rgba(119, 214, 161, 0.5);
+  color: #36b16c;
+  border: 1px solid #36b16c; }
 
 .map-cell-room-18 {
-  background-color: #7cda85; }
+  background-color: #76da92; }
 
 .map-room-18-overlay {
-  background-color: rgba(124, 218, 133, 0.5);
-  color: #35bb42;
-  border: 1px solid #35bb42; }
+  background-color: rgba(118, 218, 146, 0.5);
+  color: #32b857;
+  border: 1px solid #32b857; }
 
 .map-cell-room-19 {
-  background-color: #d5a5f1; }
+  background-color: #b688cb; }
 
 .map-room-19-overlay {
-  background-color: rgba(213, 165, 241, 0.5);
-  color: #ac4de3;
-  border: 1px solid #ac4de3; }
+  background-color: rgba(182, 136, 203, 0.5);
+  color: #8848a5;
+  border: 1px solid #8848a5; }
 
 .map-cell-room-20 {
-  background-color: #dbb8d1; }
+  background-color: #a1c0da; }
 
 .map-room-20-overlay {
-  background-color: rgba(219, 184, 209, 0.5);
-  color: #b974a5;
-  border: 1px solid #b974a5; }
+  background-color: rgba(161, 192, 218, 0.5);
+  color: #588fbd;
+  border: 1px solid #588fbd; }
 
 .map-cell-room-21 {
-  background-color: #81e1b8; }
+  background-color: #c3c0ef; }
 
 .map-room-21-overlay {
-  background-color: rgba(129, 225, 184, 0.5);
-  color: #30cc89;
-  border: 1px solid #30cc89; }
+  background-color: rgba(195, 192, 239, 0.5);
+  color: #766fda;
+  border: 1px solid #766fda; }
 
 .map-cell-room-22 {
-  background-color: #6afc86; }
+  background-color: #a0c2b2; }
 
 .map-room-22-overlay {
-  background-color: rgba(106, 252, 134, 0.5);
-  color: #06fa35;
-  border: 1px solid #06fa35; }
+  background-color: rgba(160, 194, 178, 0.5);
+  color: #639980;
+  border: 1px solid #639980; }
 
 .map-cell-room-23 {
-  background-color: #e6cccd; }
+  background-color: #888d92; }
 
 .map-room-23-overlay {
-  background-color: rgba(230, 204, 205, 0.5);
-  color: #c4888a;
-  border: 1px solid #c4888a; }
+  background-color: rgba(136, 141, 146, 0.5);
+  color: #565a5e;
+  border: 1px solid #565a5e; }
 
 .map-cell-room-24 {
-  background-color: #e8bd82; }
+  background-color: #91708d; }
 
 .map-room-24-overlay {
-  background-color: rgba(232, 189, 130, 0.5);
-  color: #d8902c;
-  border: 1px solid #d8902c; }
+  background-color: rgba(145, 112, 141, 0.5);
+  color: #584355;
+  border: 1px solid #584355; }
 
 .map-cell-room-25 {
-  background-color: #eea6e5; }
+  background-color: #78fdde; }
 
 .map-room-25-overlay {
-  background-color: rgba(238, 166, 229, 0.5);
-  color: #de50cc;
-  border: 1px solid #de50cc; }
+  background-color: rgba(120, 253, 222, 0.5);
+  color: #13fcc5;
+  border: 1px solid #13fcc5; }
 
 .map-cell-room-26 {
-  background-color: #9adbb4; }
+  background-color: #c3e57a; }
 
 .map-room-26-overlay {
-  background-color: rgba(154, 219, 180, 0.5);
-  color: #4fc07c;
-  border: 1px solid #4fc07c; }
+  background-color: rgba(195, 229, 122, 0.5);
+  color: #9bd029;
+  border: 1px solid #9bd029; }
 
 .map-cell-room-27 {
-  background-color: #867b7c; }
+  background-color: #bab89f; }
 
 .map-room-27-overlay {
-  background-color: rgba(134, 123, 124, 0.5);
-  color: #514a4b;
-  border: 1px solid #514a4b; }
+  background-color: rgba(186, 184, 159, 0.5);
+  color: #8d8a66;
+  border: 1px solid #8d8a66; }
 
 .map-cell-room-28 {
-  background-color: #aedb69; }
+  background-color: #b88181; }
 
 .map-room-28-overlay {
-  background-color: rgba(174, 219, 105, 0.5);
-  color: #7db32b;
-  border: 1px solid #7db32b; }
+  background-color: rgba(184, 129, 129, 0.5);
+  color: #874c4c;
+  border: 1px solid #874c4c; }
 
 .map-cell-room-29 {
-  background-color: #8aa5d0; }
+  background-color: #b57be1; }
 
 .map-room-29-overlay {
-  background-color: rgba(138, 165, 208, 0.5);
-  color: #466eae;
-  border: 1px solid #466eae; }
+  background-color: rgba(181, 123, 225, 0.5);
+  color: #862ec8;
+  border: 1px solid #862ec8; }
 
 .map-cell-room-30 {
-  background-color: #6a75cd; }
+  background-color: #8ebea1; }
 
 .map-room-30-overlay {
-  background-color: rgba(106, 117, 205, 0.5);
-  color: #35409c;
-  border: 1px solid #35409c; }
+  background-color: rgba(142, 190, 161, 0.5);
+  color: #54926d;
+  border: 1px solid #54926d; }
 
 .map-cell-room-31 {
-  background-color: #bcc5d7; }
+  background-color: #f97af4; }
 
 .map-room-31-overlay {
-  background-color: rgba(188, 197, 215, 0.5);
-  color: #7c8eb1;
-  border: 1px solid #7c8eb1; }
+  background-color: rgba(249, 122, 244, 0.5);
+  color: #f518ec;
+  border: 1px solid #f518ec; }
 
 .map-cell-room-32 {
-  background-color: #81e1d0; }
+  background-color: #a5a4cc; }
 
 .map-room-32-overlay {
-  background-color: rgba(129, 225, 208, 0.5);
-  color: #30ccb0;
-  border: 1px solid #30ccb0; }
+  background-color: rgba(165, 164, 204, 0.5);
+  color: #6463a7;
+  border: 1px solid #6463a7; }
 
 .map-cell-room-33 {
-  background-color: #f4a5d8; }
+  background-color: #7fccea; }
 
 .map-room-33-overlay {
-  background-color: rgba(244, 165, 216, 0.5);
-  color: #e94ab1;
-  border: 1px solid #e94ab1; }
+  background-color: rgba(127, 204, 234, 0.5);
+  color: #27a9dc;
+  border: 1px solid #27a9dc; }
 
 .map-cell-room-34 {
-  background-color: #dd88e6; }
+  background-color: #97ee8c; }
 
 .map-room-34-overlay {
-  background-color: rgba(221, 136, 230, 0.5);
-  color: #c534d4;
-  border: 1px solid #c534d4; }
+  background-color: rgba(151, 238, 140, 0.5);
+  color: #47e133;
+  border: 1px solid #47e133; }
 
 .map-cell-room-35 {
-  background-color: #f6a27e; }
+  background-color: #7cb8fb; }
 
 .map-room-35-overlay {
-  background-color: rgba(246, 162, 126, 0.5);
-  color: #ef5d1f;
-  border: 1px solid #ef5d1f; }
+  background-color: rgba(124, 184, 251, 0.5);
+  color: #1982f8;
+  border: 1px solid #1982f8; }
 
 .map-cell-room-36 {
-  background-color: #d5ebd6; }
+  background-color: #76c6fc; }
 
 .map-room-36-overlay {
-  background-color: rgba(213, 235, 214, 0.5);
-  color: #90ca93;
-  border: 1px solid #90ca93; }
+  background-color: rgba(118, 198, 252, 0.5);
+  color: #129cfa;
+  border: 1px solid #129cfa; }
 
 .map-cell-room-37 {
-  background-color: #d8af6b; }
+  background-color: #cacc98; }
 
 .map-room-37-overlay {
-  background-color: rgba(216, 175, 107, 0.5);
-  color: #af7e2e;
-  border: 1px solid #af7e2e; }
+  background-color: rgba(202, 204, 152, 0.5);
+  color: #a7aa54;
+  border: 1px solid #a7aa54; }
 
 .map-cell-room-38 {
-  background-color: #a081c1; }
+  background-color: #8e90eb; }
 
 .map-room-38-overlay {
-  background-color: rgba(160, 129, 193, 0.5);
-  color: #6d4993;
-  border: 1px solid #6d4993; }
+  background-color: rgba(142, 144, 235, 0.5);
+  color: #373bdc;
+  border: 1px solid #373bdc; }
 
 .map-cell-room-39 {
-  background-color: #e5a5ab; }
+  background-color: #be8896; }
 
 .map-room-39-overlay {
-  background-color: rgba(229, 165, 171, 0.5);
-  color: #ce5661;
-  border: 1px solid #ce5661; }
+  background-color: rgba(190, 136, 150, 0.5);
+  color: #914f60;
+  border: 1px solid #914f60; }
 
 .map-cell-room-40 {
-  background-color: #77e6fe; }
+  background-color: #66999c; }
 
 .map-room-40-overlay {
-  background-color: rgba(119, 230, 254, 0.5);
-  color: #12d3fd;
-  border: 1px solid #12d3fd; }
+  background-color: rgba(102, 153, 156, 0.5);
+  color: #3d5d5f;
+  border: 1px solid #3d5d5f; }
 
 .map-cell-room-41 {
-  background-color: #9bb0bb; }
+  background-color: #9374da; }
 
 .map-room-41-overlay {
-  background-color: rgba(155, 176, 187, 0.5);
-  color: #617f8f;
-  border: 1px solid #617f8f; }
+  background-color: rgba(147, 116, 218, 0.5);
+  color: #5a31b7;
+  border: 1px solid #5a31b7; }
 
 .map-cell-room-42 {
-  background-color: #fe7978; }
+  background-color: #cbf3e0; }
 
 .map-room-42-overlay {
-  background-color: rgba(254, 121, 120, 0.5);
-  color: #fd1513;
-  border: 1px solid #fd1513; }
+  background-color: rgba(203, 243, 224, 0.5);
+  color: #78e0af;
+  border: 1px solid #78e0af; }
 
 .map-cell-room-43 {
-  background-color: #9e7f8f; }
+  background-color: #a6ddbc; }
 
 .map-room-43-overlay {
-  background-color: rgba(158, 127, 143, 0.5);
-  color: #684f5c;
-  border: 1px solid #684f5c; }
+  background-color: rgba(166, 221, 188, 0.5);
+  color: #5cc184;
+  border: 1px solid #5cc184; }
 
 .map-cell-room-44 {
-  background-color: #e3a3d5; }
+  background-color: #e884e5; }
 
 .map-room-44-overlay {
-  background-color: rgba(227, 163, 213, 0.5);
-  color: #cb55b1;
-  border: 1px solid #cb55b1; }
+  background-color: rgba(232, 132, 229, 0.5);
+  color: #d82ed3;
+  border: 1px solid #d82ed3; }
 
 .map-cell-room-45 {
-  background-color: #a469fd; }
+  background-color: #e6e381; }
 
 .map-room-45-overlay {
-  background-color: rgba(164, 105, 253, 0.5);
-  color: #6704fc;
-  border: 1px solid #6704fc; }
+  background-color: rgba(230, 227, 129, 0.5);
+  color: #d5d02c;
+  border: 1px solid #d5d02c; }
 
 .map-cell-room-46 {
-  background-color: #f2c08a; }
+  background-color: #e9656f; }
 
 .map-room-46-overlay {
-  background-color: rgba(242, 192, 138, 0.5);
-  color: #e88f2e;
-  border: 1px solid #e88f2e; }
+  background-color: rgba(233, 101, 111, 0.5);
+  color: #cb1d2a;
+  border: 1px solid #cb1d2a; }
 
 .map-cell-room-47 {
-  background-color: #b46df7; }
+  background-color: #f66e7e; }
 
 .map-room-47-overlay {
-  background-color: rgba(180, 109, 247, 0.5);
-  color: #820df1;
-  border: 1px solid #820df1; }
+  background-color: rgba(246, 110, 126, 0.5);
+  color: #ef0f29;
+  border: 1px solid #ef0f29; }
 
 .map-cell-room-48 {
-  background-color: #aa8782; }
+  background-color: #d6e0cd; }
 
 .map-room-48-overlay {
-  background-color: rgba(170, 135, 130, 0.5);
-  color: #765550;
-  border: 1px solid #765550; }
+  background-color: rgba(214, 224, 205, 0.5);
+  color: #a2b98e;
+  border: 1px solid #a2b98e; }
 
 .map-cell-room-49 {
-  background-color: #b1b6a1; }
+  background-color: #a5d874; }
 
 .map-room-49-overlay {
-  background-color: rgba(177, 182, 161, 0.5);
-  color: #808869;
-  border: 1px solid #808869; }
+  background-color: rgba(165, 216, 116, 0.5);
+  color: #72b432;
+  border: 1px solid #72b432; }
 
 .map-cell-room-50 {
-  background-color: #99bd86; }
+  background-color: #65be9a; }
 
 .map-room-50-overlay {
-  background-color: rgba(153, 189, 134, 0.5);
-  color: #648f4e;
-  border: 1px solid #648f4e; }
+  background-color: rgba(101, 190, 154, 0.5);
+  color: #388566;
+  border: 1px solid #388566; }
 
 .map-room, #map-pathes {
   position: absolute;
