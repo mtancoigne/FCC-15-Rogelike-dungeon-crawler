@@ -142,7 +142,6 @@ class App extends React.Component{
 
       // Appliying random cell style
       for(let i in map.cells){
-        //console.log(map.cells[i].type.classNames.length);
         if(map.cells[i].type.name=='wall'){
           if(Math.random()>0.9){
             map.cells[i].type.classNames.push('wall-'+Math.floor(Math.random()*4));
@@ -465,8 +464,6 @@ class App extends React.Component{
       var preventMove=false;
       for(let i in this.state.items){
         if(this.state.items[i].position===nextPos && i!='player'){
-          console.log({h:HOSTILES, t: this.state.items[i].type});
-          console.log(HOSTILES.indexOf(this.state.items[i].type));
           if(HOSTILES.indexOf(this.state.items[i].type) > -1){
             preventMove=true;
             this._combat(i);
@@ -519,7 +516,6 @@ class App extends React.Component{
       if(this.state.items[i].canMove && i!=this.state.currentEnemy && i!='player'){
         var pos=this.state.items[i].position.split(':')
         var possibilities=this._getWalkableCellsAround(pos[0],pos[1], null, null, items, true);
-        //console.log(possibilities);
         if(possibilities.length>0){
           var newPos=possibilities[Math.floor(Math.random()*possibilities.length)];
           items[i].position=newPos[0]+':'+newPos[1];
@@ -678,7 +674,6 @@ class App extends React.Component{
       items[target].stats.life=items[target].stats.life-damage;
 
       // Check state
-      console.log('Dealing damages to '+target)
       if(items[target].stats.life <= 0){
         // Copy position
         let pPos=items[target].position;
@@ -736,7 +731,6 @@ class App extends React.Component{
 
       // Apply damages
       currentLife=this._doDamages(dmg, target);
-      console.log({target:target, life:currentLife});
 
       //Check results
       if(currentLife<=0){
@@ -753,7 +747,6 @@ class App extends React.Component{
           this._hasLeveledUp('player');
           // Check the remaining enemies
           var objects=this._countItems();
-          console.log(objects);
           if(objects['enemy']==undefined && objects['boss']==undefined){
             this._gameOver('You win !')
           }
@@ -838,7 +831,6 @@ class App extends React.Component{
                       [-2, 3],   /*[-1, 3], [ 0, 3], [ 1, 3],*/ [ 2, 3],
                                    [-1, 4], [ 0, 4], [ 1, 4],
     ];
-    console.log(matrix2.length)
     for(let i=0; i<matrix.length; i++){
       let newX=playerX+matrix[i][0];
       let newY=playerY+matrix[i][1];
@@ -847,14 +839,11 @@ class App extends React.Component{
       }
     }
     for(let i=0; i<matrix2.length; i++){
-      console.log(matrix2[i]);
       let newX=playerX+matrix2[i][0];
       let newY=playerY+matrix2[i][1];
       if(newX>=0 && newX<=mapWidth-1 && newY>=0 && newY<=mapHeight-1){
         if(cells[newX+':'+newY].type.discovered=='no'){
           cells[newX+':'+newY].type.discovered='half';
-        }else{
-          console.log(cells[newX+':'+newY].type.discovered)
         }
       }
     }

@@ -50,7 +50,6 @@ $img-sm-armor:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA
 $img-sm-celerity:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAA00lEQVQokaWQwQmDQBBF3wZLEDwEa1BswXMK0Q4CIYcQSAezheRsC8HUIB4C9mBOY9Z1RSH/tMPOm/9n4A8Zt6jqegSwIsZv1D+VFTGLptCQqq7HojwB8Hm39EOHFTGR23yMUy63s3GdfTDJcvqmA+CgDlbE9EM3ixcCV3dW3a+PsR86QuCreU7rHELwHnBydg+0FtUHASJ9FOWJCnaDE2xFjIKfdwswA49xGtru56xKsnwasOa42Fldt6LOYPdACukNtgbMYrvNFYxhxHPWYiumry8JRZAnKoswaAAAAABJRU5ErkJggg==');
 $img-sm-damage:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAA3UlEQVQokaWTwQmDQBRE30pKEDyINShpwXMK0YLWQjzbgmgNIQchPZhDmOW7ahLIPy1/Z/7MfFf4o5wOTduuOnfeuxho74W56CJPC7KyegNhtQOatl2v9Q2AZZ54PO8AJAJkZcUyTwBc61tQiokSALhYKxqQldV7AJwSd5lja0fEcejDToLtzns3Dj3AT8RgW/k6792ZVREtNmT+lHEc+s29HO4ya+OWmKdF6B1mthtXSTHuq5IzVSmMQx+Iyzxt3oCzn0hq2oGUbc/iNo/E5mlgPerZAe7bDxGXxb8AhlqsFj2afzMAAAAASUVORK5CYII=');
 $img-sm-level:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAoElEQVQokcWQuw2DMBCGf0eMgEQRZQZQVqDOIL6BzCCpWSGyZ0AUlrKDKUiQHyfnqOLOJ33/C/jXU5oo5MfJGCWBGwC4j4/j4J2FJgoSgUv88c5KDEv4LAh8YnNgvgVXo+EU4w2+4twOSWcA6PqhAKuxz0IJLAXjHSZjlNJE4drefrrEBt5ZrO9l79z1Q+FeA5PYEigHD/g1P1l4nZeaNjbp9T9Ib4GQSwAAAABJRU5ErkJggg==');
-//$img-sm-life:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAApklEQVQoka2TsQ2DMBREn6PswBggVqBmEHsgU2QGKopUrIBgDKZwiuQnxrGDEbnK0vt3Z3/Jipe0MU7OnbWKQDF+FVA37WcQnB+Q4ioE6zJTlBXTONBZu+HCAKZxeDb7KsqKdZmpmxYNm2BhEnAJzTIE4BtDljTnSsH3QvYk+0hudM/4bs4N8I3wjzfntIetUXMsIGaEk9dOShvjbv3d+R/icMAv/gDK915q8/eYegAAAABJRU5ErkJggg==');
 $img-sm-life:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAt0lEQVQokZWRvQ2DMBCFP6PswBggVqBmEHsgU2QGKopUrIBgDKZwiuQUcxhDXnXy+zvbhi+sc0Hm3nuDQop/CNG03U8IIQ44440mtnWhrGrmaaT3fscLBzBP46c5RlnVbOtC03ZY2AULJwGFNosIIDZq7tQ8T2Pq+ICi997EYrlrLkA0BXApThkBTPx/EiSz/olbBXGgdS48h1ewzgVddHgwadNCvVW2Wdr0JtnmFG415tr/xpXxDX6De45LQ8ZtAAAAAElFTkSuQmCC');
 $img-sm-strength:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAwklEQVQokY2SMRKFIAxEE8cTeQUrCyvPYAEHCgVnoLKg8gpeKb/4s3zkTxi2ig77wq4yDch5r5iDCGOeR4zLuv+eiRSAacR4HlvZtqx7uUnXTER0HhvHlBVzDZjrPG0mCwLNIOEAYEGEgwg77xXG576ozs9tIbia874UAyDOPfdFQYT/MseUNaas2FoX1aqY60YBaQGmOaasFsA0BxF+7ssE9DQRfZu1AL3tr5dt85bQ9uvfDiLsiF6fpSczX69lxPgAaZ+AQ3l+IHIAAAAASUVORK5CYII=');
 $img-sm-xp:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAw0lEQVQoka2SwQ3DIAxFPygjIPWAMkMrVuDMIGEgGCTnrBCpM0S5dQd6iKDGlLSVaglhBA9/vgE6MXmfJu9Tbx8Ahh5orDtyoFwQQxD0nGBcBfJYl7nkMQRRwWfgu4sK/AmkVXNl+W1FYx34GfmrVGraEEMQ1NEzs7jbMusHAK1GrMtcBgWNdeB9b/qs1VhBVI2xDhOQ8jwAh2EUulxvR3I/f3vVKq3GF9gJ+vZK9v7YsC9bYxr/WTlvvmdWQdfc5b/EE8yUY+SZxyq9AAAAAElFTkSuQmCC');
@@ -200,41 +199,6 @@ $img-loading:url('data:image/gif;base64,R0lGODdhMgAyAHcAACH/C05FVFNDQVBFMi4wAwEA
 .#{$prefix}cell-item-tomb-player:after{
   background-size: 100% auto;
   background-image:$img-player-tomb;
-}
-
-/* Rooms */
-
-// Generating x rooms with random bg.
-@for $i from 0 through $nb-rooms{
-  // Random starting at 100 to avoid dark bgs
-  $red:random(155)+100;
-  $green:random(155)+100;
-  $blue:random(155)+100;
-  .#{$prefix}cell-room-#{$i}{
-    background-color: rgb($red, $green, $blue);
-  }
-
-  // Overlays styles. Remove them if you don't use them.
-  .#{$prefix}room-#{$i}-overlay{
-    $color:rgb($red, $green, $blue);
-    background-color: rgba($red, $green, $blue, 0.5);
-    color: darken($color, 20%);
-    border:1px solid darken($color, 20%);;
-  }
-}
-
-// Overlays. The #room is defined in _demo.scss as not really part of this...
-.#{$prefix}room, ##{$prefix}pathes{
-  position:absolute;
-  text-shadow:
-    -1px -1px 0 #FFF,
-    1px -1px 0 #FFF,
-    -1px 1px 0 #FFF,
-    1px 1px 0 #FFF;
-  h2{
-    font-size:1.5em;
-    font-weight:bold;
-  }
 }
 
 .avatar-player{
