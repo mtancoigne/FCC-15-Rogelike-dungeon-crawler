@@ -24,10 +24,22 @@ $border-color:darken($bg-color, 10%);
 $pane-bg-color:lighten($bg-color, 5%);
 $log-bg-color: #FFFFEE;
 
-$green-border-color:mix(#0F0, $border-color);
-$blue-border-color:mix(#00F, $border-color);
-$red-border-color:mix(#F00, $border-color);
-$orange-border-color:mix(#F80, $border-color);
+$green-background:mix(#0F0, $border-color);
+$green-border-color:darken($green-background, 15%);
+$green-text:darken($green-border-color, 10%);
+
+$blue-background:mix(#00F, $border-color);
+$blue-border-color:darken($blue-background, 15%);
+$blue-text:darken($blue-border-color, 10%);
+
+$red-background:mix(#F00, $border-color);
+$red-border-color:darken($red-background, 15%);
+$red-text:darken($red-border-color, 10%);
+
+$orange-background:mix(#F80, $border-color);
+$orange-border-color:darken($orange-background, 15%);
+$orange-text:darken($orange-border-color, 10%);
+
 $font-size:12px;
 $font-color:#444;
 
@@ -57,9 +69,20 @@ body{
 h1{
   font-family: $font-header;
   font-size:3em;
-  margin-top:$margin-lg;
-  margin-bottom:$margin-sm;
+  padding:$padding-lg;
+  padding-top:$padding-lg*2;
+  margin-bottom:-$margin-lg/2;
+  margin-left:$margin-lg*2;
   font-weight:bold;
+  background: $pane-bg-color;
+  border:1px solid $border-color;
+  border-bottom:none;
+  display:inline-block;
+  small{
+    font-family:Overlock;
+    font-size:0.5em;
+    color: $blue-text;
+  }
 }
 
 h2{
@@ -70,7 +93,6 @@ h2{
 
 small{
   font-size:0.8em;
-  color: #999;
 }
 
 input{
@@ -115,6 +137,13 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 
 #app{
   width:($main-width);
+  margin-left:50%;
+  transform: translateX(-50%);
+  min-height: 100%;
+  @media(max-width:1135px){
+    margin-left:0px;
+    transform: translateX(0);
+  }
 }
 
 #main{
@@ -125,15 +154,6 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
   display: flex;
   p{
     margin: $margin-sm $margin-lg;
-  }
-  .info{
-    position:relative;
-    top:0px;
-    left:160px;
-    //transform: translateX(-100%);
-    font-size: 1.2em;
-    font-weight:bold;
-    color:darken($blue-border-color, 30%);
   }
 }
 #menu{
@@ -179,15 +199,14 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
   margin-left:$margin-lg;
   text-align:center;
   font-size:1.5em;
-  font-weight: bold
+  font-weight: bold;
   small{
-    display:block;
-    text-align: center;
-    font-size:1em;
+    font-size:0.8em;
   }
 }
 #infoMessage{
   margin-bottom:$margin-lg*2;
+  padding:$padding-lg;
   font-size: 1.2em;
   .btn{
     margin-bottom: 0px;
@@ -241,6 +260,7 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 }
 
 .btn{
+  margin-top:$margin-sm;
   cursor: pointer;
   font-variant:small-caps;
   text-align: center;
@@ -270,7 +290,7 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 }
 
 .disabled{
-  opacity: 0.7;
+  opacity: 0.5;
   cursor:not-allowed;
 }
 
@@ -300,31 +320,36 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 
 .message-success{
   background-color: transparentize($green-border-color, 0.8);
-  border-color: $green-border-color;
+  border-left:3px solid $green-border-color;
   color:$font-color;
+  padding:0 $padding-lg;
 }
 .message-info{
   background-color: transparentize($blue-border-color, 0.8);
-  border-color: $blue-border-color;
+  border-left:3px solid $blue-border-color;
   color:$font-color;
+  padding:0 $padding-lg;
 }
 .message-danger{
   background-color: transparentize($orange-border-color, 0.8);
-  border-color: $orange-border-color;
+  border-left:3px solid $orange-border-color;
   color:$font-color;
+  padding:0 $padding-lg;
 }
 .message-fatal{
   background-color: transparentize($red-border-color, 0.8);
-  border-color: $red-border-color;
+  border-left:3px solid $red-border-color;
   color:$font-color;
-}
-.message-hr{
-  text-align: center;
+  padding:0 $padding-lg;
 }
 .message-system{
   background-color: transparentize($border-color, 0.8);
-  border-color: $border-color;
+  border-left:3px solid $border-color;
   color:$font-color;
+  padding:0 $padding-lg;
+}
+.message-hr{
+  text-align: center;
 }
 
 .progress{
@@ -347,21 +372,29 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 }
 
 .orange{
-  background-color:$orange-border-color;
+  background-color:$orange-background;
 }
 .red{
-  background-color:$red-border-color;
+  background-color:$red-background;
 }
 .green{
-  background-color:$green-border-color;
+  background-color:$green-background;
 }
 
 .btn-blue{
-  border-color: darken($blue-border-color, 20%);
-  background-color:$blue-border-color;
-  color:darken($blue-border-color, 30%);
+  border-color: $blue-border-color;
+  background-color:$blue-background;
+  color:$blue-text;
   &:hover{
-    background-color:lighten($blue-border-color, 10%);
+    background-color:lighten($blue-background, 10%);
+  }
+}
+.btn-green{
+  border-color: $green-border-color;
+  background-color:$green-background;
+  color:$green-text;
+  &:hover{
+    background-color:lighten($green-background, 10%);
   }
 }
 
@@ -381,10 +414,13 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
     padding:2*$padding-lg;
     font-size:2em;
     border-bottom-width:5px;
-    border-color: darken($green-border-color, 20%);
-    background-color:$green-border-color;
-    color:darken($green-border-color, 30%);
+    border-color: $green-border-color;
+    background-color:$green-background;
+    color:$green-text;
     margin-bottom: 0;
+    &:hover{
+      background-color:lighten($green-background, 10%);
+    }
   }
 }
 .overlay {
