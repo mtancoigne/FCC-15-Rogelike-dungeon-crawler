@@ -3,6 +3,8 @@ import React from 'react';
 class PlayerStats extends React.Component{
   constructor(props){
     super(props);
+
+    this._goDown=this._goDown.bind(this);
   }
 
   render(){
@@ -22,6 +24,18 @@ class PlayerStats extends React.Component{
         <div className="bar-wrap">&nbsp;<div className={'bar '+barColor} style={{width:percent+'%'}}></div></div>
       </div>)
     }
+    var button='';
+    var btnClass=" btn-green"
+    var btnText="Go deeper in the cave..."
+    var bntOnClick=this._goDown;
+    var hostiles=(this.props.items.enemy || 0)+(this.props.items.boss||0);
+    if(hostiles > 0){
+      btnClass=" disabled";
+      btnText=hostiles+ ' hostile(s) remaining...';
+      bntOnClick=null;
+    }
+    var button=(<button className={'btn btn-block'+btnClass} onClick={bntOnClick}>&gt; {btnText} &lt;</button>);
+
     return(
       <div className="avatar" id="target-player">
         <div className="avatar-header">
@@ -82,8 +96,12 @@ class PlayerStats extends React.Component{
             </tr>
           </tbody>
         </table>
+        {button}
       </div>
     );
+  }
+  _goDown(){
+    this.props.goDown();
   }
 }
 

@@ -27,16 +27,17 @@ class App extends React.Component{
               <a href="https://github.com/mtancoigne/FCC-15-Rogelike-dungeon-crawler/issues" target="_blank">Issues and feedback are welcome</a>.
             </p>
             <p>
-              As everything is randomly generated, you may have sometimes trouble to win, so watch for the availables chests and lives...<br/>
+              As everything is randomly generated, you may have sometimes trouble to win, so watch for the availables chests and lives...<br/> And walk on lava if you feel you have no choices, it's not that bad.
             </p>
             <p>All code and sprites created by Manuel Tancoigne, code is under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT license</a> and sprites assigned under a <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"><img src="http://mirrors.creativecommons.org/presskit/buttons/80x15/png/by-nc-sa.png" height="15px" title="Creative Commons BY-NC-SA license" alt="Creative Commons BY-NC-SA license" /></a></p>
             <button className="btn btn-block btn-blue" onClick={this._hideInfo}>Got it, close this now.</button>
           </div>
-          <h1>The Big Crawl</h1>
+          <h1>The Big Crawl <small className="info">~ Kill 'em all for next level. ~</small></h1>
           <MapInfos
             items={this._countItems()}
             orig={this.state.startItems}
             mapName={this.state.mapName}
+            mapLevel={this.state.mapLevel}
           />
           <div id="main">
             <div id="menu">
@@ -52,6 +53,8 @@ class App extends React.Component{
                 strength={this.state.items['player'].stats.strength}
                 armor={this.state.items['player'].stats.armor}
                 celerity={this.state.items['player'].stats.celerity}
+                items={this._countItems()}
+                goDown={this._goDown}
                 />
               <EnemyInfos
                 level={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].stats.level:null}
@@ -87,6 +90,7 @@ class App extends React.Component{
     super(props);
 
     this._reset=this._reset.bind(this);
+    this._goDown=this._goDown.bind(this);
   }
 
   componentWillMount(){
@@ -99,7 +103,8 @@ class App extends React.Component{
    * @param {promise-Callback} cb the callback that handles the promise
    * @return {Promise}  Returns a promise
    */
-  _generate(){
+  _generate(options){
+    if(options==undefined){options={player:null, mapLevel:0};}
     return new Promise((resolve, reject)=>{
       let error=false;
       let map=new MapGen(this.props.options);
@@ -108,8 +113,8 @@ class App extends React.Component{
       map.removeSmallRooms(300);
 
       let player={};
-      if(this.props.playerStats){
-        player=this.props.playerStats;
+      if(options.player){
+        player=options.player;
       }else{
         player=Object.assign({}, DEFAULT_ITEM, {
           name:'John',
@@ -118,6 +123,10 @@ class App extends React.Component{
           className:'player',
           stats: Object.assign({}, DEFAULT_STATS, this._levelStats(1)),
         })
+      }
+      var mapLevel=-1;
+      if(options.mapLevel){
+        mapLevel+=options.mapLevel;
       }
 
       map.addItems({player: player}, true);
@@ -159,6 +168,7 @@ class App extends React.Component{
       // map.items.player.stats.life=1;
 
       resolve ({
+        mapLevel: mapLevel,
         map:map,
         messages:[],
         vp:[],
@@ -179,9 +189,9 @@ class App extends React.Component{
   /**
    * Generates a new map and resets this.state
    */
-  _reset(){
+  _reset(options){
     this.setState({loading:true});
-    this._generate()
+    this._generate(options)
       .then(map => this.setState(map))
       .catch(error => console.error(error));
   }
@@ -294,6 +304,7 @@ class App extends React.Component{
     var giveXp=       10*level;
     var celerity=     1+level;
     return {
+      level:level,
       life:life,
       totalLife:life,
       damage:damage,
@@ -593,7 +604,7 @@ class App extends React.Component{
   }
 
   /**
-   * Handles the plaer's death or success
+   * Handles the player's death
    *
    * @param string msg - Message to display in log an on the gameOver panel.
    */
@@ -601,6 +612,17 @@ class App extends React.Component{
     this.setState({gameOver:true, endGameMessage:msg});
     this._conslog('system', '---');
     this._conslog('fatal', msg);
+  }
+
+  _goDown(){
+    // Save player stats
+    var player=JSON.parse(JSON.stringify(this.state.items.player));
+    this._reset({player: player, mapLevel:this.state.mapLevel});
+    // Increment map level
+    // Reset
+    /*this.setState({gameOver:true, endGameMessage:msg});
+    this._conslog('system', '---');
+    this._conslog('success', msg);*/
   }
 
   /**
@@ -757,10 +779,10 @@ class App extends React.Component{
           // Check the current level
           this._hasLeveledUp('player');
           // Check the remaining enemies
-          var objects=this._countItems();
+          /*var objects=this._countItems();
           if(objects['enemy']==undefined && objects['boss']==undefined){
             this._gameOver('You win !')
-          }
+          }*/
         }else{
           this._gameOver('You have been defeated.');
         }

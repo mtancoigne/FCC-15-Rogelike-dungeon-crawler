@@ -49,9 +49,19 @@ body {
 h1 {
   font-family: "Trade Winds";
   font-size: 3em;
-  margin-top: 15px;
-  margin-bottom: 5px;
-  font-weight: bold; }
+  padding: 10px;
+  padding-top: 20px;
+  margin-bottom: -7.5px;
+  margin-left: 30px;
+  font-weight: bold;
+  background: #eaeaea;
+  border: 1px solid #c4c4c4;
+  border-bottom: none;
+  display: inline-block; }
+h1 small {
+  font-family: Overlock;
+  font-size: 0.5em;
+  color: #1f1fa4; }
 
 h2 {
   margin: 5px 0px;
@@ -59,8 +69,7 @@ h2 {
   font-weight: bold; }
 
 small {
-  font-size: 0.8em;
-  color: #999; }
+  font-size: 0.8em; }
 
 input {
   background-color: #DDD;
@@ -103,7 +112,14 @@ tr:nth-child(even) {
   background: rgba(255, 255, 255, 0.2); }
 
 #app {
-  width: 1100px; }
+  width: 1100px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  min-height: 100%; }
+@media (max-width: 1135px) {
+  #app {
+    margin-left: 0px;
+    transform: translateX(0); } }
 
 #main {
   display: flex;
@@ -113,13 +129,6 @@ tr:nth-child(even) {
   display: flex; }
 #mapInfos p {
   margin: 5px 15px; }
-#mapInfos .info {
-  position: relative;
-  top: 0px;
-  left: 160px;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #1b1b8f; }
 
 #menu {
   width: 250px; }
@@ -155,13 +164,13 @@ tr:nth-child(even) {
   margin-left: 15px;
   text-align: center;
   font-size: 1.5em;
-  font-weight: bold small;
-  font-weight-display: block;
-  font-weight-text-align: center;
-  font-weight-font-size: 1em; }
+  font-weight: bold; }
+#mapName small {
+  font-size: 0.8em; }
 
 #infoMessage {
   margin-bottom: 30px;
+  padding: 10px;
   font-size: 1.2em; }
 #infoMessage .btn {
   margin-bottom: 0px;
@@ -208,6 +217,7 @@ tr:nth-child(even) {
   margin-top: -5px; }
 
 .btn {
+  margin-top: 5px;
   cursor: pointer;
   font-variant: small-caps;
   text-align: center;
@@ -233,7 +243,7 @@ tr:nth-child(even) {
   margin-bottom: 5px; }
 
 .disabled {
-  opacity: 0.7;
+  opacity: 0.5;
   cursor: not-allowed; }
 
 .panel {
@@ -257,32 +267,37 @@ tr:nth-child(even) {
   text-decoration: underline; }
 
 .message-success {
-  background-color: rgba(98, 225, 98, 0.2);
-  border-color: #62e162;
-  color: #444; }
+  background-color: rgba(40, 207, 40, 0.2);
+  border-left: 3px solid #28cf28;
+  color: #444;
+  padding: 0 10px; }
 
 .message-info {
-  background-color: rgba(98, 98, 225, 0.2);
-  border-color: #6262e1;
-  color: #444; }
+  background-color: rgba(40, 40, 207, 0.2);
+  border-left: 3px solid #2828cf;
+  color: #444;
+  padding: 0 10px; }
 
 .message-danger {
-  background-color: rgba(225, 166, 98, 0.2);
-  border-color: #e1a662;
-  color: #444; }
+  background-color: rgba(207, 129, 40, 0.2);
+  border-left: 3px solid #cf8128;
+  color: #444;
+  padding: 0 10px; }
 
 .message-fatal {
-  background-color: rgba(225, 98, 98, 0.2);
-  border-color: #e16262;
-  color: #444; }
-
-.message-hr {
-  text-align: center; }
+  background-color: rgba(207, 40, 40, 0.2);
+  border-left: 3px solid #cf2828;
+  color: #444;
+  padding: 0 10px; }
 
 .message-system {
   background-color: rgba(196, 196, 196, 0.2);
-  border-color: #c4c4c4;
-  color: #444; }
+  border-left: 3px solid #c4c4c4;
+  color: #444;
+  padding: 0 10px; }
+
+.message-hr {
+  text-align: center; }
 
 .progress {
   width: 100%; }
@@ -304,11 +319,18 @@ tr:nth-child(even) {
   background-color: #62e162; }
 
 .btn-blue {
-  border-color: #2323ba;
+  border-color: #2828cf;
   background-color: #6262e1;
-  color: #1b1b8f; }
+  color: #1f1fa4; }
 .btn-blue:hover {
   background-color: #8d8de9; }
+
+.btn-green {
+  border-color: #28cf28;
+  background-color: #62e162;
+  color: #1fa41f; }
+.btn-green:hover {
+  background-color: #8de98d; }
 
 #target-player flash, #target-enemy flash {
   transition-duration: .2s; }
@@ -325,10 +347,12 @@ tr:nth-child(even) {
   padding: 20px;
   font-size: 2em;
   border-bottom-width: 5px;
-  border-color: #23ba23;
+  border-color: #28cf28;
   background-color: #62e162;
-  color: #1b8f1b;
+  color: #1fa41f;
   margin-bottom: 0; }
+#reset .btn:hover {
+  background-color: #8de98d; }
 
 .overlay {
   position: fixed;
@@ -545,11 +569,12 @@ td .ico {
 
 #loading {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0px;
+  left: 0px;
+  min-width: 100%;
+  min-height: 100%;
   background-color: #eaeaea;
+  border: 1px solid #c4c4c4;
   transition: 1s; }
 
 #loading::after {
