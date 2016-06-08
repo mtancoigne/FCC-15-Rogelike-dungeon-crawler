@@ -375,7 +375,7 @@ tr:nth-child(even) {
 /* Cell */
 .map-cell {
   display: table-cell;
-  width: 35;
+  width: 35px;
   border: none; }
 
 .map-cell:after {
