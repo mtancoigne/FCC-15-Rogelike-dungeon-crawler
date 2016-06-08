@@ -1,0 +1,398 @@
+/// Demo-related styles
+/// -------------------
+///
+/// You can skip this in your own implementation.
+///
+/// @author Manuel Tancoigne
+/// @license MIT
+
+/*
+  Variables
+*/
+// Document background
+
+// Fonts
+@import url(https://fonts.googleapis.com/css?family=Flamenco:400|Trade+Winds|Overlock:400,900);
+
+$font-header:'Trade Winds';
+$font-body: 'Overlock';
+$font-quote: 'Flamenco';
+
+$bg-color:#DDD;
+// Default
+$border-color:darken($bg-color, 10%);
+$pane-bg-color:lighten($bg-color, 5%);
+$log-bg-color: #FFFFEE;
+
+$green-border-color:mix(#0F0, $border-color);
+$blue-border-color:mix(#00F, $border-color);
+$red-border-color:mix(#F00, $border-color);
+$orange-border-color:mix(#F80, $border-color);
+$font-size:12px;
+$font-color:#444;
+
+$radius-sm:3px;
+$radius-lg:5px;
+
+$padding-sm:3px;
+$padding-lg:10px;
+
+$margin-sm:5px;
+$margin-lg:15px;
+$main-width: 1100px; //14*80+2+2*$padding-lg;
+
+*{
+  box-sizing: border-box;
+}
+
+body{
+  background-color:$bg-color;
+  font-family: $font-body;
+  font-size:$font-size;
+  color:$font-color;
+  line-height: $font-size+2*$padding-sm;
+  padding:$padding-lg;
+}
+
+h1{
+  font-family: $font-header;
+  font-size:3em;
+  margin-top:$margin-lg;
+  margin-bottom:$margin-sm;
+  font-weight:bold;
+}
+
+h2{
+  margin: $margin-sm 0px;
+  font-size:1.5em;
+  font-weight:bold;
+}
+
+small{
+  font-size:0.8em;
+  color: #999;
+}
+
+input{
+  background-color:$bg-color;
+  border:1px solid $border-color;
+  padding:$padding-sm;
+  border-bottom-width: 3px;
+}
+
+input:focus{
+  background-color: lighten($bg-color, 10%);
+}
+
+/* Remove controls from Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  text-align: right;
+}
+
+/* Re-applies the controls on :hover and :focus */
+input[type="number"]:hover,
+input[type="number"]:focus {
+  -moz-appearance: number-input;
+}
+// Remove the glow.
+textarea, input { outline: none; }
+table{
+  width:100%
+}
+th{
+  padding:$padding-sm $padding-lg;
+  width:75px;
+  text-align: left;
+  font-weight: bold;
+  display:flex;
+}
+td{
+  padding-left: $padding-sm $padding-lg;
+}
+tr:nth-child(odd) {background: rgba(0, 0, 0, 0.1)}
+tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
+
+#app{
+  width:($main-width);
+}
+
+#main{
+  display: flex;
+  margin:$margin-lg 0px;
+}
+#mapInfos{
+  display: flex;
+  p{
+    margin: $margin-sm $margin-lg;
+  }
+  .info{
+    position:relative;
+    top:0px;
+    left:160px;
+    //transform: translateX(-100%);
+    font-size: 1.2em;
+    font-weight:bold;
+    color:darken($blue-border-color, 30%);
+  }
+}
+#menu{
+  width:250px;
+}
+
+#menu, #game{
+  margin-right: $margin-lg;
+}
+
+#menu, #game, #questLog{
+  display:block;
+}
+
+
+#questLog{
+  width:250px;
+  height:100%;
+  max-height: 525px;
+  overflow:hidden;
+  div{
+    font-family:monospace;
+    font-size:0.8em;
+    &.info{
+      border-bottom:$padding-sm solid $border-color;
+      font-size:1.5em;
+      margin-bottom:$margin-sm;
+      color:darken($font-color, 10%);
+    }
+  }
+}
+
+#reset{
+  padding:$padding-lg;
+  p{
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+}
+
+#mapName{
+  margin-left:$margin-lg;
+  text-align:center;
+  font-size:1.5em;
+  font-weight: bold
+  small{
+    display:block;
+    text-align: center;
+    font-size:1em;
+  }
+}
+#infoMessage{
+  margin-bottom:$margin-lg*2;
+  font-size: 1.2em;
+  .btn{
+    margin-bottom: 0px;
+    margin-top: $margin-lg;
+  }
+  p{
+    margin-top:$margin-sm;
+    :first-child{
+      margin-top: 0px;
+    }
+  }
+}
+.avatar{
+  border:1px solid $border-color;
+  border-bottom-width: $radius-sm;
+  background-color: $pane-bg-color;
+  padding:$padding-sm;
+  margin-bottom: $margin-lg;
+}
+
+.avatar-header{
+  display: flex;
+  margin-bottom: $margin-sm;
+}
+
+.avatar-img{
+  display: inline-flex;
+  max-width:50px;
+  max-height:50px;
+  min-width:50px;
+  min-height:50px;
+  background-repeat: no-repeat;
+}
+.avatar-content{
+  display: inline-block;
+  border-left:1px solid $border-color;
+  margin-left: $margin-sm;
+  padding-left: $margin-sm;
+  min-height:50px;
+}
+.avatar-name{
+  font-weight:bold;
+  font-size:1.2em;
+  margin-bottom:$margin-sm;
+}
+
+.avatar-description{
+  font-family: $font-quote;
+  font-size: 1.3em;
+  margin-top:-$margin-sm;
+}
+
+.btn{
+  cursor: pointer;
+  font-variant:small-caps;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  color:$font-color;
+  background-color: lighten($border-color, 5%);
+  border:1px solid  $border-color;
+  border-radius: $radius-sm;
+  padding:$padding-sm $padding-lg;
+  border-bottom-width:$radius-sm;
+  &:hover{
+    background-color:lighten($border-color, 15%);
+  }
+  .active{
+    top:$radius-sm;
+    border-top:$radius-sm;
+    border-bottom-width: 1px;
+    background-color:lighten($border-color, 10%);
+  }
+}
+
+.btn-block{
+  display: block;
+  width:100%;
+  margin-bottom: $margin-sm;
+}
+
+.disabled{
+  opacity: 0.7;
+  cursor:not-allowed;
+}
+
+.panel{
+  border: 1px solid $border-color;
+  background-color: $pane-bg-color;
+  padding: $padding-lg;
+}
+
+.tooltip {
+	display:none;
+	position:absolute;
+	border:1px solid #333;
+	background-color:#161616;
+	border-radius:$radius-sm;
+	padding:$padding-sm $padding-lg;
+	color:#fff;
+	font-size:0.8em;
+  font-family:monospace;
+  li{
+    margin-left:$margin-lg;
+  }
+  strong{
+    text-decoration: underline;
+  }
+}
+
+.message-success{
+  background-color: transparentize($green-border-color, 0.8);
+  border-color: $green-border-color;
+  color:$font-color;
+}
+.message-info{
+  background-color: transparentize($blue-border-color, 0.8);
+  border-color: $blue-border-color;
+  color:$font-color;
+}
+.message-danger{
+  background-color: transparentize($orange-border-color, 0.8);
+  border-color: $orange-border-color;
+  color:$font-color;
+}
+.message-fatal{
+  background-color: transparentize($red-border-color, 0.8);
+  border-color: $red-border-color;
+  color:$font-color;
+}
+.message-hr{
+  text-align: center;
+}
+.message-system{
+  background-color: transparentize($border-color, 0.8);
+  border-color: $border-color;
+  color:$font-color;
+}
+
+.progress{
+  width:100%;
+  //margin-top:2px;
+  .bar-wrap{
+    //border:1px solid $border-color;
+    //position: relative;
+    //transform: translateY(-50%);
+    .bar{
+      height:4px;
+    }
+  }
+  span{
+    position: relative;
+    float:left;
+    text-align: center;
+    display: block;
+  }
+}
+
+.orange{
+  background-color:$orange-border-color;
+}
+.red{
+  background-color:$red-border-color;
+}
+.green{
+  background-color:$green-border-color;
+}
+
+.btn-blue{
+  border-color: darken($blue-border-color, 20%);
+  background-color:$blue-border-color;
+  color:darken($blue-border-color, 30%);
+  &:hover{
+    background-color:lighten($blue-border-color, 10%);
+  }
+}
+
+#target-player flash, #target-enemy flash{
+  @extend .red;
+  transition-duration: .2s;
+}
+#reset{
+  position:fixed;
+  padding:$padding-lg;
+  top: 50%;
+  left: 50%;
+  min-width: 300px;
+  transform: translateY(-50%);
+  transform: translateX(-50%);
+  .btn{
+    padding:2*$padding-lg;
+    font-size:2em;
+    border-bottom-width:5px;
+    border-color: darken($green-border-color, 20%);
+    background-color:$green-border-color;
+    color:darken($green-border-color, 30%);
+    margin-bottom: 0;
+  }
+}
+.overlay {
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0,0,0, 0.5);
+  display: block;
+}

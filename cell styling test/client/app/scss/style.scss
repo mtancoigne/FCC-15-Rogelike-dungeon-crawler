@@ -1,0 +1,174 @@
+@import "reset.scss" ;
+
+// Variables
+$bg-color:#DDD;
+$border-color:darken($bg-color, 10%);
+$pane-bg-color:lighten($bg-color, 5%);
+$log-bg-color: #FFFFEE;
+$menu-width:250px;
+
+$font-size:12px;
+$font-color:#444;
+
+$radius-sm:3px;
+$radius-lg:5px;
+$cell-radius:3px;
+
+$padding-sm:3px;
+$padding-lg:10px;
+
+$margin-sm:5px;
+$margin-lg:15px;
+
+$playerColor: #44FC44;
+$enemyColor: #FC8888;
+$bossColor:   #F00;
+$chestColor:  #8888FC;
+$floorColor:  rgb(73, 90, 154);//#DDD;
+$wallColor:   rgb(154,90,73);//$border-color;
+
+*{
+  box-sizing: border-box;
+}
+
+body{
+  background-color:$bg-color;
+  font-family: sans-serif;
+  font-size:$font-size;
+  color:$font-color;
+  line-height: $font-size+2*$padding-sm;
+  padding:$padding-lg;
+}
+
+#menu{
+  width:$menu-width;
+  float:left;
+  border: 1px solid $border-color;
+  border-bottom-width: 3px;
+  background-color: $pane-bg-color;
+  padding:$padding-lg;
+  h3{
+    border-bottom:1px solid $border-color;
+    font-size:1.2em;
+    margin-top:$margin-lg;
+  }
+  h3:first-child{
+    margin-top:0px;
+  }
+}
+
+#questLog{
+  border:1px solid lighten($border-color, 5%);
+  background-color:$log-bg-color;
+  color:invert($log-bg-color);
+  padding:$padding-sm;
+  font-family:monospace;
+}
+
+#game{
+  border: 1px solid $border-color;
+  background-color: $pane-bg-color;
+  margin-left:$menu-width+$margin-lg;
+  height:100%;
+}
+
+// Map row
+.row{
+  display: table-row;
+}
+// Map cell
+.cell{
+  display: table-cell;
+  //border-collapse: collapse;
+  //border:1px solid transparent;
+  width: 14px;
+  border:0px;
+}
+
+$cellVariations: otl, otr, obl, obr, itl, it, itr, il, ir, ibl, ib, ibr, btl, btr, bbl, bbr, svt, svm, svb, shl, shm, shr, stt, str, stb, stl, sa, sf, x, x3t, x3l, x3b, x3r, x2t, x2l, x2b, x2r, x1tl, x1tr, x1br, x1bl;
+$border-color: darken($floorColor, 15%);
+%otl{}
+%otr{}
+%obl{}
+%obr{}
+
+%itl{border-top-left-radius: $cell-radius;}
+%it{}
+%itr{border-top-right-radius: $cell-radius;}
+%ir{}
+%il{}
+%ibl{border-bottom-left-radius: $cell-radius;}
+%ib{}
+%ibr{border-bottom-right-radius: $cell-radius;}
+
+%btl{border-top-left-radius: $cell-radius;}
+%btr{border-top-right-radius: $cell-radius;}
+%bbl{border-bottom-left-radius: $cell-radius;}
+%bbr{border-bottom-right-radius: $cell-radius;}
+
+%svt{border-top-left-radius: $cell-radius;border-top-right-radius: $cell-radius;}
+%svm{}
+%svb{border-bottom-left-radius: $cell-radius;border-bottom-right-radius: $cell-radius;}
+
+%shl{border-top-left-radius: $cell-radius;border-bottom-left-radius: $cell-radius;}
+%shm{}
+%shr{border-top-right-radius: $cell-radius;border-bottom-right-radius: $cell-radius;}
+
+%stt{}
+%str{}
+%stb{}
+%stl{}
+
+%sa{border-radius:$cell-radius;}
+%sf{}
+%x{}
+%x3t{}
+%x3l{}
+%x3b{}
+%x3r{}
+%x2t{}
+%x2l{}
+%x2b{}
+%x2r{}
+%x1tl{}
+%x1tr{}
+%x1br{}
+%x1bl{}
+
+@mixin cell-after-base($type){
+  @if $type==floor {
+    background-color:$floorColor;
+  }@else{
+    background-color:$wallColor;
+    border:1px solid darken($wallColor, 15%);
+  }
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+  border:1px solid transparent;
+}
+
+@each $type in floor, wall{
+  @each $var in $cellVariations{
+    .cell-#{$type}.#{$var}:after{
+      @include cell-after-base($type);
+      @extend %#{$var} !optional;
+    }
+  }
+}
+
+.cell-wall{
+  background-color: $floorColor;
+}
+.cell-floor{
+  background-color: $wallColor;
+}
+.cell-enemy{
+  background-color: $enemyColor;
+}
+.cell-item{
+  background-color: $chestColor;
+}
+.cell-boss{
+  background-color: $bossColor;
+}
