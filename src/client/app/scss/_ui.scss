@@ -10,6 +10,14 @@
   Variables
 */
 // Document background
+
+// Fonts
+@import url(https://fonts.googleapis.com/css?family=Flamenco:400|Trade+Winds|Overlock:400,900);
+
+$font-header:'Trade Winds';
+$font-body: 'Overlock';
+$font-quote: 'Flamenco';
+
 $bg-color:#DDD;
 // Default
 $border-color:darken($bg-color, 10%);
@@ -39,7 +47,7 @@ $main-width: 1100px; //14*80+2+2*$padding-lg;
 
 body{
   background-color:$bg-color;
-  font-family: sans-serif;
+  font-family: $font-body;
   font-size:$font-size;
   color:$font-color;
   line-height: $font-size+2*$padding-sm;
@@ -47,7 +55,10 @@ body{
 }
 
 h1{
-  font-size:2em;
+  font-family: $font-header;
+  font-size:3em;
+  margin-top:$margin-lg;
+  margin-bottom:$margin-sm;
   font-weight:bold;
 }
 
@@ -116,7 +127,10 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
     margin: $margin-sm $margin-lg;
   }
   .info{
-    float:right;
+    position:relative;
+    top:0px;
+    left:160px;
+    //transform: translateX(-100%);
     font-size: 1.2em;
     font-weight:bold;
     color:darken($blue-border-color, 30%);
@@ -173,7 +187,18 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
   }
 }
 #infoMessage{
-  margin-bottom:$margin-lg;
+  margin-bottom:$margin-lg*2;
+  font-size: 1.2em;
+  .btn{
+    margin-bottom: 0px;
+    margin-top: $margin-lg;
+  }
+  p{
+    margin-top:$margin-sm;
+    :first-child{
+      margin-top: 0px;
+    }
+  }
 }
 .avatar{
   border:1px solid $border-color;
@@ -210,8 +235,9 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
 }
 
 .avatar-description{
-  font-style: italic;
-  color:lighten($font-color, 15%)
+  font-family: $font-quote;
+  font-size: 1.3em;
+  margin-top:-$margin-sm;
 }
 
 .btn{
@@ -330,12 +356,21 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
   background-color:$green-border-color;
 }
 
+.btn-blue{
+  border-color: darken($blue-border-color, 20%);
+  background-color:$blue-border-color;
+  color:darken($blue-border-color, 30%);
+  &:hover{
+    background-color:lighten($blue-border-color, 10%);
+  }
+}
+
 #target-player flash, #target-enemy flash{
   @extend .red;
   transition-duration: .2s;
 }
 #reset{
-  position:absolute;
+  position:fixed;
   padding:$padding-lg;
   top: 50%;
   left: 50%;
@@ -349,10 +384,11 @@ tr:nth-child(even) {background: rgba(255, 255, 255, 0.2)}
     border-color: darken($green-border-color, 20%);
     background-color:$green-border-color;
     color:darken($green-border-color, 30%);
+    margin-bottom: 0;
   }
 }
 .overlay {
-  position: absolute;
+  position: fixed;
   min-width: 100%;
   min-height: 100%;
   top: 0px;

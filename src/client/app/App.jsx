@@ -8,34 +8,43 @@ import QuestLog from './QuestLog.jsx';
 import Grid from './Grid.jsx';
 import Reset from './Reset.jsx';
 
-import MapGen from './data/MapGen.jsx';
+// import MapGen from './data/MapGen.jsx';
 
 class App extends React.Component{
   render(){
     if(this.state.loading){
-      return (<div id="loading"></div>);
+      return (
+        <div>
+          <div class="overlay"></div>
+          <div id="loading"></div>
+        </div>);
     }else{
       return(
         <div>
           <div className="panel message-info" id="infoMessage">
-            <p>This "game" is a Challenge for <a href="http://freecodecamp.com" target="_blank">FreeCodeCamp</a>. You can find the sources <a href="https://github.com/mtancoigne/FCC-15-Rogelike-dungeon-crawler"target="_blank">here</a>.</p>
             <p>
-              As everything is randomly generated, you may have sometimes trouble to win.<br/>
+              This "game" is a React Challenge for <a href="http://freecodecamp.com" target="_blank">FreeCodeCamp</a>. You can find the sources on the <a href="https://github.com/mtancoigne/FCC-15-Rogelike-dungeon-crawler"target="_blank">GitHub</a> repository.
               <a href="https://github.com/mtancoigne/FCC-15-Rogelike-dungeon-crawler/issues" target="_blank">Issues and feedback are welcome</a>.
             </p>
+            <p>
+              As everything is randomly generated, you may have sometimes trouble to win, so watch for the availables chests and lives...<br/>
+            </p>
+            <p>All code and sprites created by Manuel Tancoigne, code is under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT license</a> and sprites assigned under a <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"><img src="http://mirrors.creativecommons.org/presskit/buttons/80x15/png/by-nc-sa.png" height="15px" title="Creative Commons BY-NC-SA license" alt="Creative Commons BY-NC-SA license" /></a></p>
+            <button className="btn btn-block btn-blue" onClick={this._hideInfo}>Got it, close this now.</button>
           </div>
+          <h1>The Big Crawl</h1>
           <MapInfos
             items={this._countItems()}
             orig={this.state.startItems}
             mapName={this.state.mapName}
-            mapLevel={this.state.mapLevel}/>
+          />
           <div id="main">
             <div id="menu">
               <PlayerStats
                 name={this.state.items['player'].name}
                 description={this.state.items['player'].description}
                 link={this.state.items['player'].link}
-                level={this.state.items['player'].stats.experience!=null?this._determineLevel(this.state.items['player'].stats.experience):''}
+                level={this.state.items['player'].stats.level}
                 life={this.state.items['player'].stats.life}
                 totalLife={this.state.items['player'].stats.totalLife}
                 experience={this.state.items['player'].stats.experience}
@@ -45,7 +54,7 @@ class App extends React.Component{
                 celerity={this.state.items['player'].stats.celerity}
                 />
               <EnemyInfos
-                level={this.state.currentEnemy!=null?this._determineLevel(this.state.items[this.state.currentEnemy].stats.experience):null}
+                level={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].stats.level:null}
                 name={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].name:null}
                 description={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].description:null}
                 link={this.state.currentEnemy!=null?this.state.items[this.state.currentEnemy].more:null}
@@ -93,8 +102,7 @@ class App extends React.Component{
   _generate(){
     return new Promise((resolve, reject)=>{
       let error=false;
-      let map=new MapGen;
-      map.init(this.props.options)
+      let map=new MapGen(this.props.options);
       map.createMap();
       map.createRooms();
       map.removeSmallRooms(300);
@@ -132,14 +140,33 @@ class App extends React.Component{
         }
       }
 
+      // Appliying random cell style
+      for(let i in map.cells){
+        //console.log(map.cells[i].type.classNames.length);
+        if(map.cells[i].type.name=='wall'){
+          if(Math.random()>0.9){
+            map.cells[i].type.classNames.push('wall-'+Math.floor(Math.random()*4));
+          }
+        }else if(map.cells[i].type.name=='floor'){
+          if(Math.random()>0.9){
+            map.cells[i].type.classNames.push('floor-'+Math.floor(Math.random()*4));
+          }
+        }
+      }
+
+      // Testing superpowers
+      // map.items.player.stats.damage=1000;
+      // map.items.player.stats.celerity=1000;
+      // map.items.player.stats.life=1;
+
       resolve ({
+        map:map,
         messages:[],
         vp:[],
         startItems:[],
         currentEnemy:null,
         gameOver:false,
         loading:false,
-        mapLevel:-1,
         mapName:this._mapName(),
         grid:map.grid,
         items:map.items,
@@ -213,7 +240,7 @@ class App extends React.Component{
     var bosses={};
     var bossStats={};
     for (let i=0; i<number; i++){
-      let boss=BOSS_NAMES[Math.floor(Math.random()*BOSS_NAMES.length)];
+      let boss=BOSSES[Math.floor(Math.random()*BOSSES.length)];
 
       bossStats=this._levelStats(playerLevel+5);
 
@@ -224,7 +251,7 @@ class App extends React.Component{
         canMove:true,
         stats: Object.assign({}, DEFAULT_STATS, bossStats),
         className: 'boss',
-        type:'hostile',
+        type:boss.type,
       })
     }
     //this._conslog('system','Created '+ number+ ' bosses');
@@ -240,12 +267,20 @@ class App extends React.Component{
   */
   _levelStats(level){
     var stats={}
-    // Base life:
+    // experience
+    var experience=0
+    if(level==2){
+      experience=20;
+    }else if(level>2){
+      experience=20
+      for(let i=0; i<level; i++){
+        experience*=2;
+      }
+    }
     var life=         50+(level*50);
     var damage=       9+level;
     var strength=     1+level;
     var armor=        1+level;
-    var experience=(level===1)?0:level*10;
     var giveXp=       10*level;
     var celerity=     1+level;
     return {
@@ -261,6 +296,40 @@ class App extends React.Component{
   }
 
   /**
+   * Checks if a character gained a level and apply modifications
+   *
+   * @param string target - Character to check.
+   *
+   * @return bool - True if the character gained a level.
+   */
+  _hasLeveledUp(target){
+    let tStats=this.state.items[target].stats;
+    // Compare levels
+    let theorical=this._determineLevel(tStats.experience);
+    if(theorical>tStats.level){
+      // Calculates new stats
+      let bStats=this._levelStats(tStats.level);
+      let nStats=this._levelStats(theorical);
+      // Update the stats
+      tStats.level=theorical;
+      tStats.totalLife=nStats.life;
+      tStats.life=nStats.life;
+      tStats.damage+=(nStats.damage-bStats.damage)
+      tStats.strength+=(nStats.strength-bStats.strength)
+      tStats.armor+=(nStats.armor-bStats.armor)
+      tStats.celerity+=(nStats.celerity-bStats.celerity)
+
+      let items=this.state.items;
+      items[target].stats=tStats;
+      this.setState({items:items});
+      this._conslog('system', '---');
+      this._conslog('success', 'You gained one level !');
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Returns a character's level, given its experience. This is a very basic calculus
    *
    * @param int experience - Actual experience
@@ -268,7 +337,16 @@ class App extends React.Component{
    * @return int - The character's level
    */
   _determineLevel(experience){
-    return(Math.floor(experience/10)+1);
+    if(experience < 20){return 1};
+    // return 0;
+    let level=0;
+    let done=false;
+    while(!done){
+      experience/=2;
+      level++;
+      done=(experience-10<0);
+    }
+    return level;
   }
   /**
    * Creates ennemies.
@@ -292,7 +370,7 @@ class App extends React.Component{
     var enemies=[];
     for(let i=0; i<nb; i++){
       // Select random enemy
-      let enemy=ENEMY_NAMES[Math.floor(Math.random()*ENEMY_NAMES.length)];
+      let enemy=ENEMIES[Math.floor(Math.random()*ENEMIES.length)];
       let enemyStats={};
       // Generate random states
       var randomGen=Math.floor(Math.random()*101);
@@ -312,7 +390,7 @@ class App extends React.Component{
         canMove:true,
         stats: Object.assign({}, DEFAULT_STATS, enemyStats),
         className: type,
-        type:'hostile',
+        type:enemy.type,
       });
     }
 
@@ -387,7 +465,9 @@ class App extends React.Component{
       var preventMove=false;
       for(let i in this.state.items){
         if(this.state.items[i].position===nextPos && i!='player'){
-          if(this.state.items[i].type==='hostile'){
+          console.log({h:HOSTILES, t: this.state.items[i].type});
+          console.log(HOSTILES.indexOf(this.state.items[i].type));
+          if(HOSTILES.indexOf(this.state.items[i].type) > -1){
             preventMove=true;
             this._combat(i);
           }else if(this.state.items[i].type==='item'){
@@ -512,7 +592,7 @@ class App extends React.Component{
    */
   _gameOver(msg){
     this.setState({gameOver:true, endGameMessage:msg});
-    this.conslog('system', '---');
+    this._conslog('system', '---');
     this._conslog('fatal', msg);
   }
 
@@ -548,7 +628,7 @@ class App extends React.Component{
     var tg=this.state.items[target];
 
     // Define who engage first
-    var playerFirst=(pl.stats.celerity>pl.stats.celerity);
+    var playerFirst=(pl.stats.celerity>tg.stats.celerity);
 
     // Lock the enemy
     this.setState({currentEnemy:target});
@@ -598,17 +678,30 @@ class App extends React.Component{
       items[target].stats.life=items[target].stats.life-damage;
 
       // Check state
+      console.log('Dealing damages to '+target)
       if(items[target].stats.life <= 0){
         // Copy position
         let pPos=items[target].position;
         // Nice tomb
-        items[target]=Object.assign({}, DEFAULT_ITEM, ITEMS[target!='player'?'tomb_stone':'tomb_stone_player']);
+        var tomb='';
+        switch(items[target].type){
+          case 'player':
+            tomb='tomb_stone_player';
+            break;
+          case 'enemy':
+            tomb='tomb_stone';
+            break;
+          case 'boss':
+            tomb='tomb_stone_boss';
+            break;
+        }
+        items[target]=Object.assign({}, DEFAULT_ITEM, ITEMS[tomb]);
         // Re-set position
         items[target].position=pPos;
       }
       this.setState({items:items});
     }
-    return this.state.items[target].stats.life;
+    return this.state.items[target].stats.life || 0;
   }
 
   /**
@@ -643,6 +736,7 @@ class App extends React.Component{
 
       // Apply damages
       currentLife=this._doDamages(dmg, target);
+      console.log({target:target, life:currentLife});
 
       //Check results
       if(currentLife<=0){
@@ -652,8 +746,17 @@ class App extends React.Component{
           var items=this.state.items;
           // Add experience to player
           items['player'].stats.experience+=tXp;
+          this._conslog('success', '... You gained '+tXp+' experience points');
           // Update the state
           this.setState({items:items, currentEnemy:null});
+          // Check the current level
+          this._hasLeveledUp('player');
+          // Check the remaining enemies
+          var objects=this._countItems();
+          console.log(objects);
+          if(objects['enemy']==undefined && objects['boss']==undefined){
+            this._gameOver('You win !')
+          }
         }else{
           this._gameOver('You have been defeated.');
         }
@@ -724,11 +827,35 @@ class App extends React.Component{
            [-2, 2], [-1, 2], [ 0, 2], [ 1, 2], [ 2, 2],
                     [-1, 3], [ 0, 3], [ 1, 3]
                   ];
+    var matrix2=[
+                                   [-1,-4], [ 0,-4], [ 1,-4],
+                      [-2,-3],   /*[-1,-3], [ 0,-3], [ 1,-3],*/ [ 2,-3],
+           [-3,-2], /*[-2,-2],     [-1,-2], [ 0,-2], [ 1,-2],   [ 2,-2],*/ [ 3,-2],
+[-4,-1], /*[-3,-1],   [-2,-1],     [-1,-1], [ 0,-1], [ 1,-1],   [ 2,-1],   [ 3,-1],*/ [ 4,-1],
+[-4, 0], /*[-3, 0],   [-2, 0],     [-1, 0], [ 0, 0], [ 1, 0],   [ 2, 0],   [ 3, 0],*/ [ 4, 0],
+[-4, 1], /*[-3, 1],   [-2, 1],     [-1, 1], [ 0, 1], [ 1, 1],   [ 2, 1],   [ 3, 1],*/ [ 4, 1],
+           [-3, 2], /*[-2, 2],     [-1, 2], [ 0, 2], [ 1, 2],   [ 2, 2],*/ [ 3, 2],
+                      [-2, 3],   /*[-1, 3], [ 0, 3], [ 1, 3],*/ [ 2, 3],
+                                   [-1, 4], [ 0, 4], [ 1, 4],
+    ];
+    console.log(matrix2.length)
     for(let i=0; i<matrix.length; i++){
       let newX=playerX+matrix[i][0];
       let newY=playerY+matrix[i][1];
       if(newX>=0 && newX<=mapWidth-1 && newY>=0 && newY<=mapHeight-1){
-        cells[newX+':'+newY].discovered=true;
+        cells[newX+':'+newY].type.discovered='visible';
+      }
+    }
+    for(let i=0; i<matrix2.length; i++){
+      console.log(matrix2[i]);
+      let newX=playerX+matrix2[i][0];
+      let newY=playerY+matrix2[i][1];
+      if(newX>=0 && newX<=mapWidth-1 && newY>=0 && newY<=mapHeight-1){
+        if(cells[newX+':'+newY].type.discovered=='no'){
+          cells[newX+':'+newY].type.discovered='half';
+        }else{
+          console.log(cells[newX+':'+newY].type.discovered)
+        }
       }
     }
     return cells;
@@ -788,6 +915,13 @@ class App extends React.Component{
 
     return adj + ' ' + noun + ' of ' + adverb;
   }
+
+  /**
+  * Hides the info area using jquery as not important.
+  */
+  _hideInfo(){
+    $('#infoMessage').toggle()
+  }
 }
 
 
@@ -820,15 +954,16 @@ const DEFAULT_ITEM={
 const DEFAULT_STATS={life:-1, totalLife:0, damage:0, strength:0, armor:0, level:1, experience:0, giveXp:0, celerity:1};
 
 const CELL_TYPES={
-  wall:    {name:'wall',   isWalkable:false, classNames:['wall'],  discovered:false, isBaseCell:true},
-  floor:   {name:'floor',  isWalkable:true,  classNames:['floor'], discovered:false, isBaseCell:true},
-  lava:    {name:'lava',   isWalkable:true,  classNames:['lava'],  discovered:false, damage:1},
-  water:   {name:'water',  isWalkable:true,  classNames:['water'], discovered:false},
+  wall:    {name:'wall',   isWalkable:false, classNames:['wall'],  discovered:'no', isBaseCell:true},
+  floor:   {name:'floor',  isWalkable:true,  classNames:['floor'], discovered:'no', isBaseCell:true},
+  lava:    {name:'lava',   isWalkable:true,  classNames:['lava'],  discovered:'no', damage:1},
+  water:   {name:'water',  isWalkable:true,  classNames:['water'], discovered:'no'},
 };
 
 const ITEMS={
-  tomb_stone:        {name:'Remains',           description: 'A dead enemy',                    type:'special', storable:false, consumable:false, className:'tomb', stats:{life:0}},
-  tomb_stone_player: {name:'You',               description: 'Diseases took your life away...', type:'special', storable:false, consumable:false, className:'tomb-player', stats:{life:0}},
+  tomb_stone_player: {name:'You',               description: 'Something took your life away... And broke your hat...', type:'special', storable:false, consumable:false, className:'tomb-player', stats:{life:0}},
+  tomb_stone:        {name:'a corpse',          description: 'A dead enemy',                    type:'special', storable:false, consumable:false, className:'tomb', stats:{life:0}},
+  tomb_stone_boss:   {name:'a large corpse',    description: 'A dead powerful enemy',           type:'special', storable:false, consumable:false, className:'tomb-boss', stats:{life:0}},
   life_potion:       {name:'Life potion',       description: 'Gives you 50 points of life',     type:'item',    storable:false, consumable:true,  className:'health', effect:'_potion_life'},
   token_strength:    {name:'Token of strength', description: 'Adds 1 to your strength',         type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_strength'},
   token_damage:      {name:'Token of damage',   description: 'Adds 1 to your damage',           type:'item',    storable:true,  consumable:false, className:'chest',  effect:'_token_damage'},
@@ -837,22 +972,25 @@ const ITEMS={
 };
 
 // Some bosses :
-const BOSS_NAMES=[
-  {name:'Joker', description:'The Joker is a fictional supervillain who appears in American comic books published by DC Comics. The character was created by Jerry Robinson, Bill Finger, and Bob Kane, and first appeared in Batman #1.', more:'http://www.ranker.com/review/joker/2498261?ref=name_320416'},
-  {name:'Hannibal Lecter', description:'Dr. Hannibal Lecter is a character in a series of suspense novels by Thomas Harris. Lecter was introduced in the 1981 thriller novel Red Dragon as a forensic psychiatrist and cannibalistic serial killer.', more:'http://www.ranker.com/review/hannibal-lecter/1125580?ref=name_320416'},
-  {name:'Jack Torrence', description:'John Daniel "Jack" Torrance is a fictional character in the 1977 novel The Shining by Stephen King.', more:'http://www.ranker.com/review/jack-torrance/1254047?ref=name_320416'},
-  {name:'Freddy Kruegger', description:'Fred "Freddy" Krueger is the main antagonist of the A Nightmare on Elm Street film series. He first appeared in Wes Craven\'s A Nightmare on Elm Street as a burnt serial killer who uses a glove armed with razors to kill his victims in their dreams', more:'http://www.ranker.com/review/freddy-krueger/1022376?ref=name_320416'},
+const BOSSES=[
+  {type:'boss', name:'Joker', description:'The Joker is a fictional supervillain who appears in American comic books published by DC Comics. The character was created by Jerry Robinson, Bill Finger, and Bob Kane, and first appeared in Batman #1.', more:'http://www.ranker.com/review/joker/2498261?ref=name_320416'},
+  {type:'boss', name:'Hannibal Lecter', description:'Dr. Hannibal Lecter is a character in a series of suspense novels by Thomas Harris. Lecter was introduced in the 1981 thriller novel Red Dragon as a forensic psychiatrist and cannibalistic serial killer.', more:'http://www.ranker.com/review/hannibal-lecter/1125580?ref=name_320416'},
+  {type:'boss', name:'Jack Torrence', description:'John Daniel "Jack" Torrance is a fictional character in the 1977 novel The Shining by Stephen King.', more:'http://www.ranker.com/review/jack-torrance/1254047?ref=name_320416'},
+  {type:'boss', name:'Freddy Kruegger', description:'Fred "Freddy" Krueger is the main antagonist of the A Nightmare on Elm Street film series. He first appeared in Wes Craven\'s A Nightmare on Elm Street as a burnt serial killer who uses a glove armed with razors to kill his victims in their dreams', more:'http://www.ranker.com/review/freddy-krueger/1022376?ref=name_320416'},
 ];
 
 // Some enemies :
-const ENEMY_NAMES=[
-  {name:'Gloom Lad', description:'I have all the characteristics of a human being: blood, flesh, skin, hair; but not a single, clear, identifiable emotion, except for greed and disgust.', more:null},
-  {name:'Killer Woman', description:'I visited your home this morning after you\'d left. I tried to play husband. I tried to taste the life of a simple man. It didn\'t work out, so I took a souvenir... her pretty head.', more:null},
-  {name:'Master Man', description:'The point is ladies and gentlemen that greed, for lack of a better word, is good.', more:null},
-  {name:'Necrotic Murderer', description:'Human beings are a disease, a cancer of this planet. You\'re a plague and we are the cure.', more:null},
-  {name:'Sickness Master', description:'I\'m going to do something now they used to do in Vietnam. It\'s called making a head on a stick.', more:null},
-  {name:'Viral Shade', description:'If Mr. McMurphy doesn\'t want to take his medication orally, I\'m sure we can arrange that he can have it some other way. But I don\'t think that he would like it.', more:null},
+const ENEMIES=[
+  {type:'enemy', name:'Gloom Lad', description:'I have all the characteristics of a human being: blood, flesh, skin, hair; but not a single, clear, identifiable emotion, except for greed and disgust.', more:null},
+  {type:'enemy', name:'Killer Woman', description:'I visited your home this morning after you\'d left. I tried to play husband. I tried to taste the life of a simple man. It didn\'t work out, so I took a souvenir... her pretty head.', more:null},
+  {type:'enemy', name:'Master Man', description:'The point is ladies and gentlemen that greed, for lack of a better word, is good.', more:null},
+  {type:'enemy', name:'Necrotic Murderer', description:'Human beings are a disease, a cancer of this planet. You\'re a plague and we are the cure.', more:null},
+  {type:'enemy', name:'Sickness Master', description:'I\'m going to do something now they used to do in Vietnam. It\'s called making a head on a stick.', more:null},
+  {type:'enemy', name:'Viral Shade', description:'If Mr. McMurphy doesn\'t want to take his medication orally, I\'m sure we can arrange that he can have it some other way. But I don\'t think that he would like it.', more:null},
 ];
+
+const HOSTILES=['boss', 'enemy']
+
 const MAP_OPTIONS={x:5, y:5, passes:3, cleanLevel:5, wallPercent:10, sameSubCellPercent:80, cssPrefix:'map-', cellTypes:CELL_TYPES};
 
 var appRendered=render(<App options={MAP_OPTIONS} startLevel='1' newGame={true} playerStats={null} vpSize='15'/>, document.getElementById('app'));

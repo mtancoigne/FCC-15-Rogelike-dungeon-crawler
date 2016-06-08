@@ -11,20 +11,20 @@ Original idea found here: http://web.archive.org/web/20110825054218/http://prope
 
 The object can be created with an object of options as follow:
 {
-// Base map width
-x: integer,
-// Base map width
-y: integer,
-// Number of subdivisions
-passes: integer,
-// Cleaning level (0-5)
-cleanLevel: integer,
-// Percentage of walls
-wallPercent: integer,
-// When creating sub-cells, percentage of chances to have the same type:
-sameSubCellPercent:integer,
-// Css prefix for classes
-cssPrefix: string
+  // Base map width
+  x: integer,
+  // Base map width
+  y: integer,
+  // Number of subdivisions
+  passes: integer,
+  // Cleaning level (0-5)
+  cleanLevel: integer,
+  // Percentage of walls
+  wallPercent: integer,
+  // When creating sub-cells, percentage of chances to have the same type:
+  sameSubCellPercent:integer,
+  // Css prefix for classes
+  cssPrefix: string
 };
 */
 class MapGen{
@@ -46,8 +46,8 @@ class MapGen{
       cssPrefix:'map-',
       // default cell types
       cellTypes:{
-        wall:    {name:'wall',   isWalkable:false, classNames:['wall'],   canMove:false, isBaseCell:true},
-        floor:   {name:'floor',  isWalkable:true,  classNames:['floor'],  canMove:false, isBaseCell:true},
+        wall:    {name:'wall',   isWalkable:false, classNames:['wall'],   canMove:false, useInMapGen:true, isBaseCell:true},
+        floor:   {name:'floor',  isWalkable:true,  classNames:['floor'],  canMove:false, useInMapGen:true, isBaseCell:true},
       },
       // Default items. Use this.createItems() to fill this, after map generation.
       items:{}
@@ -82,52 +82,68 @@ class MapGen{
     this.rooms=[];
     this.cells={};
   }
+}
 
-  /**
-  * Creates a Cell
-  */
-  Cell(id, x, y, room, type){
-    return{
-      // Cell id
-      id:id!=undefined?id:null,
-      // Placement in x
-      x:x!=undefined?x:null,
-      // Placement in Y
-      y:x!=undefined?y:null,
-      // Room id
-      roomId:room!=undefined?room:null,
-      // Cell type
-      type:type!=undefined?type:null,
-    }
-  }
 
-  CellType(options){
-    // Defaults
-    var o={
-      // Name
-      name:null,
-      // Is it possible to walk on it ?
-      isWalkable:false,
-      // CSS classes
-      classNames:[],
-      // How much damage does this cell does ?
-      damage: 0,
-      // Is it a base cell ? (floor and wall only.)
-      isBaseCell:false
-    };
+/**
+  Represents a cell
+  @constructor
+*/
+MapGen.prototype.Cell=function(id, x, y, room, type){
+  // Cell id
+  this.id=(id!=undefined?id:null);
+  // Placement in x
+  this.x=(x!=undefined?x:null);
+  // Placement in Y
+  this.y=(x!=undefined?y:null);
+  // Room id
+  this.roomId=(room!=undefined?room:null);
+  // Cell type
+  this.type=(type!=undefined?type:null);
+}
 
-    // Filling properties
+/**
+  Represents a cell type
+  @constructor
+*/
+MapGen.prototype.CellType=function(options){
+  var o={
+    // Name
+    name:null,
+    // Is it possible to walk on it ?
+    isWalkable:false,
+    // CSS classes
+    classNames:[],
+    // How much damage does this cell does ?
+    damage: 0,
+    // Is it a base cell ? (floor and wall only.)
+    isBaseCell:false,
+  };
+
+  // Filling properties
+  if((typeof options)!= 'object'){
+    console.warn('New CellTypes using defaults... this has been passed to the contructor:');
+    console.warn(options);
+  }else{
     for(let i in o){
-      if(options[i]==undefined){options[i]=o[i];}
+      if(options[i]!=undefined){this[i]=options[i];}
+      else{this[i]=o[i];}
     }
-    return options
   }
 }
 
 /**
-Returns the current cell type, or a WALL if outside of the map.
-@param x int - Current row
-@param y int - Current col
+  Setter for CellTypes classNames that will avoid doubles.
+*/
+MapGen.prototype.CellType.prototype.addClass=function(newClass){
+  if(this.classNames.indexOf(newClass)===-1){
+    this.classNames.push(newClass);
+  }
+}
+/**
+  Returns the current cell type, or a WALL if outside of the map.
+  @param x int - Current row
+  @param y int - Current col
 */
 MapGen.prototype._getCellType=function(x, y){
   if(x>=0 && y>=0 && x<this.grid[0].length && y<this.grid.length){
@@ -138,9 +154,9 @@ MapGen.prototype._getCellType=function(x, y){
 }
 
 /**
-Count direct neighbours of the same type
-@param x int - Current row
-@param y int - Current col
+  Count direct neighbours of the same type
+  @param x int - Current row
+  @param y int - Current col
 */
 MapGen.prototype._getCellSameDirectNeighbours=function(x, y){
   var currentType=this._getCellType(x, y);
@@ -156,55 +172,55 @@ MapGen.prototype._getCellSameDirectNeighbours=function(x, y){
 }
 
 /**
-Count global neighbours of the same type
-@param x int - Current row
-@param y int - Current col
+ Count global neighbours of the same type
+ @param x int - Current row
+ @param y int - Current col
 */
 MapGen.prototype._getCellSameNeighbours=function(x, y){
-  var currentType=this._getCellType(x, y);
-  var cellsToCheck=[[x-1, y-1], [x-1, y], [x-1, y+1], [x, y-1], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]];
-  var sum=0;
-  // Cumulate the values
-  for(let i=0; i<cellsToCheck.length; i++){
-    if(this._getCellType(cellsToCheck[i][0], cellsToCheck[i][1]) === currentType){
-      sum++;
-    }
-  }
-  return sum;
+ var currentType=this._getCellType(x, y);
+ var cellsToCheck=[[x-1, y-1], [x-1, y], [x-1, y+1], [x, y-1], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]];
+ var sum=0;
+ // Cumulate the values
+ for(let i=0; i<cellsToCheck.length; i++){
+   if(this._getCellType(cellsToCheck[i][0], cellsToCheck[i][1]) === currentType){
+     sum++;
+   }
+ }
+ return sum;
 }
 
 /**
-Returns the dominant type of surrounding cells.
-@param x int - Current row
-@param y int - Current col
+ Returns the dominant type of surrounding cells.
+ @param x int - Current row
+ @param y int - Current col
 */
 MapGen.prototype._getCellDominantDirectNeighbours=function (x, y){
-  var types={};
-  var cellsToCheck=[[x-1, y-1], [x-1, y], [x-1, y+1], [x, y-1], [x, y], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]];
-  for(let i=0; i<cellsToCheck.length; i++){
-    var type=this._getCellType(cellsToCheck[i][0], cellsToCheck[i][1]);
-    if(types[type]===undefined){
-      types[type]=0;
-    }
-    types[type]++;
-  }
-  var cellTypes=Object.keys(types);
-  var max=0;
-  var maxType='';
-  for(let i=0; i<cellTypes.length; i++){
-    if(types[cellTypes[i]]>max){ // Higher value
-      max=types[cellTypes[i]];
-      maxType=cellTypes[i];
-    }
-  }
-  return maxType;
+ var types={};
+ var cellsToCheck=[[x-1, y-1], [x-1, y], [x-1, y+1], [x, y-1], [x, y], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]];
+ for(let i=0; i<cellsToCheck.length; i++){
+   var type=this._getCellType(cellsToCheck[i][0], cellsToCheck[i][1]);
+   if(types[type]===undefined){
+     types[type]=0;
+   }
+   types[type]++;
+ }
+ var cellTypes=Object.keys(types);
+ var max=0;
+ var maxType='';
+ for(let i=0; i<cellTypes.length; i++){
+   if(types[cellTypes[i]]>max){ // Higher value
+     max=types[cellTypes[i]];
+     maxType=cellTypes[i];
+   }
+ }
+ return maxType;
 }
 
 /**
-Check if the given cell is already registered in a room.
-If true, returns the room number.
-@param x int - Current row
-@param y int - Current col
+  Check if the given cell is already registered in a room.
+  If true, returns the room number.
+  @param x int - Current row
+  @param y int - Current col
 */
 MapGen.prototype._isInARoom=function(x, y){
   if(this.cells[x+':'+y].roomId!=null){
@@ -214,8 +230,8 @@ MapGen.prototype._isInARoom=function(x, y){
 }
 
 /**
-Returns the index of the given room in this.rooms or false if not found.
-@param int roomId - Id of the targeted room
+  Returns the index of the given room in this.rooms or false if not found.
+  @param int roomId - Id of the targeted room
 */
 MapGen.prototype._getRoomIndex=function(roomId){
   for(let i=0; i<this.rooms.length; i++){
@@ -227,10 +243,10 @@ MapGen.prototype._getRoomIndex=function(roomId){
 }
 
 /**
-Find all the cells in a room.
-@param x int - X position of the starting point
-@param y int - Y position of the starting point
-@param roomId - Room id
+  Find all the cells in a room.
+  @param x int - X position of the starting point
+  @param y int - Y position of the starting point
+  @param roomId - Room id
 */
 MapGen.prototype._fillRoom=function(x, y, roomId){
   var cells=this._getWalkableCellsAround(x, y);
@@ -247,9 +263,9 @@ MapGen.prototype._fillRoom=function(x, y, roomId){
 }
 
 /**
-Returns the cells that are walkables, directly adjacent to a given cell.
-@param x int - Current row
-@param y int - Current col
+  Returns the cells that are walkables, directly adjacent to a given cell.
+  @param x int - Current row
+  @param y int - Current col
 */
 MapGen.prototype._getWalkableCellsAround=function (x,y){
   var type=this.grid[y][x];
@@ -276,15 +292,15 @@ MapGen.prototype._getWalkableCellsAround=function (x,y){
 }
 
 /**
-Returns the names of the cell types that can be used for map generation
-walls and floor excepted.
-@param boolean noBase - If true, will skip base cells (wall and floor)
+  Returns the names of the cell types that can be used for map generation
+  walls and floor excepted.
+  @param boolean noBase - If true, will skip base cells (wall and floor)
 */
 MapGen.prototype._getBuildableTypes=function(noBase){
   var types=[];
   for(let i in this.cellTypes){
     // Generate a temporary CellType object to have access to all its properties
-    let tmpCellType=this.CellType(this.cellTypes[i]);
+    let tmpCellType=new this.CellType(Object.assign({}, this.cellTypes[i]));
     if(noBase===false || tmpCellType.isBaseCell===false ){
       types.push(i);
     }
@@ -293,8 +309,8 @@ MapGen.prototype._getBuildableTypes=function(noBase){
 }
 
 /**
-Returns a room's bounding box
-@param int roomId - Room id
+  Returns a room's bounding box
+  @param int roomId - Room id
 */
 MapGen.prototype._getRoomBoundingBox=function(roomId){
   var index=this._getRoomIndex(roomId);
@@ -315,8 +331,8 @@ MapGen.prototype._getRoomBoundingBox=function(roomId){
 }
 
 /**
-Calculates the distances between two rooms centers
-WORK IN PROGRESS...
+  Calculates the distances between two rooms centers
+  WORK IN PROGRESS...
 */
 MapGen.prototype._findPaths=function(){
   var distances=[];
@@ -347,12 +363,12 @@ MapGen.prototype._findPaths=function(){
 }
 
 /**
-Sorts an array of arrays of 2 values (ie: `[[1,2], [3,4], [5,6]]`) on the
-first or second col
+  Sorts an array of arrays of 2 values (ie: `[[1,2], [3,4], [5,6]]`) on the
+  first or second col
 
-Be carreful, indexes still start at 0
-@param array arr - Array to sort
-@param int dataCol - Index of order.
+  Be carreful, indexes still start at 0
+  @param array arr - Array to sort
+  @param int dataCol - Index of order.
 */
 MapGen.prototype._sortPair=function(arr, dataCol){
   arr.sort(function(a, b){
@@ -364,23 +380,23 @@ MapGen.prototype._sortPair=function(arr, dataCol){
 
 
 /**
-Fills this.cells with grid data
+  Fills this.cells with grid data
 */
 MapGen.prototype._convertGridToNamedCells=function(){
   var id=1;
   for(let y=0; y<this.grid.length; y++){
     for (let x=0; x<this.grid[y].length; x++){
-      this.cells[x+':'+y]= this.Cell(id, x, y, null, this.CellType(this.cellTypes[this.grid[y][x]]));
+      this.cells[x+':'+y]=new this.Cell(id, x, y, null, new this.CellType(this.cellTypes[this.grid[y][x]]));
       id++;
     }
   }
 }
 
 /**
-Finds all walkable cells,
+  Finds all walkable cells,
 
-@param int avoidDeadlyAreas - Include damaging cells, default true
-@return array - List of indexes from this.cells
+  @param int avoidDeadlyAreas - Include damaging cells, default true
+  @return array - List of indexes from this.cells
 */
 MapGen.prototype._getWalkableCells=function (avoidDeadlyAreas){
   if(avoidDeadlyAreas===undefined){avoidDeadlyAreas=false;}
@@ -395,18 +411,18 @@ MapGen.prototype._getWalkableCells=function (avoidDeadlyAreas){
   return list;
 }
 /**
-Creates a map of size base*(passes^2).
-Calling this function with no params will use the defaults values.
+  Creates a map of size base*(passes^2).
+  Calling this function with no params will use the defaults values.
 
-Note that if you want to skip a specific param in the list, you should make it `undefined`
-(ie: `createMap(5,5,4, undefined, 2,5)` Note that the last param was omited)
+  Note that if you want to skip a specific param in the list, you should make it `undefined`
+  (ie: `createMap(5,5,4, undefined, 2,5)` Note that the last param was omited)
 
-@param int xLength - Base width of the map
-@param int yLength - Base height of the map
-@param int passes - Number of passes for map refinement
-@param int cleanLevel - Whether or not clean the map (remove lonely cells. Value from 0 to 5, 0 being no cleanup and 5 the max.
-@param int wallPercent - Wall/floor ratio
-@param int sameSubCellPercent - Chances for a cell to be of its predecessor type, while subdivising the map
+  @param int xLength - Base width of the map
+  @param int yLength - Base height of the map
+  @param int passes - Number of passes for map refinement
+  @param int cleanLevel - Whether or not clean the map (remove lonely cells. Value from 0 to 5, 0 being no cleanup and 5 the max.
+  @param int wallPercent - Wall/floor ratio
+  @param int sameSubCellPercent - Chances for a cell to be of its predecessor type, while subdivising the map
 */
 MapGen.prototype.createMap=function(xLength, yLength, passes, cleanLevel, wallPercent, sameSubCellPercent){
   // Arguments:
@@ -494,7 +510,7 @@ MapGen.prototype.createMap=function(xLength, yLength, passes, cleanLevel, wallPe
         if(this._getCellSameDirectNeighbours(x, y)<=cleanLevel-1){
           let dominant=this._getCellDominantDirectNeighbours(x, y);
           this.grid[y][x]=dominant;
-          this.cells[x+':'+y].type=this.CellType(this.cellTypes[dominant]);
+          this.cells[x+':'+y].type=new this.CellType(this.cellTypes[dominant]);
         }
       }
     }
@@ -502,7 +518,7 @@ MapGen.prototype.createMap=function(xLength, yLength, passes, cleanLevel, wallPe
 }
 
 /**
-Finds all the rooms in the map, fills this.rooms and completes this.cells.
+  Finds all the rooms in the map, fills this.rooms and completes this.cells.
 */
 MapGen.prototype.createRooms=function(){
   var roomId=1; // Room identifier
@@ -534,26 +550,26 @@ MapGen.prototype.createRooms=function(){
 
 
 /**
-Adds an additionnal class to wall cells next to a room for nice styling.
-@todo Make this thing work.
+  Adds an additionnal class to wall cells next to a room for nice styling.
+  @todo Make this thing work.
 */
 /*MapGen.prototype.outlineRooms=function(){
-var twalls=0
-var walls=0;
-for(let i in this.cells){
-if(this._getCellSameNeighbours(this.cells[i].x, this.cells[i].y)<8 && this.cells[i].type.name===this.WALL){
-//console.log({cell:i, type:this.cells[i].type.name, sn:this._getCellSameNeighbours(this.cells[i].x, this.cells[i].y)});
-//console.log(this.cells[this.cells[i].x+':'+this.cells[i].y]);
-this.cells[i].type.addClass('wall-close');
-walls++;
-}
-twalls++;
-}
+  var twalls=0
+  var walls=0;
+  for(let i in this.cells){
+    if(this._getCellSameNeighbours(this.cells[i].x, this.cells[i].y)<8 && this.cells[i].type.name===this.WALL){
+      //console.log({cell:i, type:this.cells[i].type.name, sn:this._getCellSameNeighbours(this.cells[i].x, this.cells[i].y)});
+      //console.log(this.cells[this.cells[i].x+':'+this.cells[i].y]);
+      this.cells[i].type.addClass('wall-close');
+      walls++;
+    }
+    twalls++;
+  }
 }*/
 
 /**
-Remove really small rooms
-@param int minSize - Minimum size for a room to be kept.
+  Remove really small rooms
+  @param int minSize - Minimum size for a room to be kept.
 */
 MapGen.prototype.removeSmallRooms=function(minSize){
   // Purge small rooms and convert them to walls
@@ -566,7 +582,7 @@ MapGen.prototype.removeSmallRooms=function(minSize){
         // Wall conversion
         this.grid[this.rooms[i].cells[j][0]][this.rooms[i].cells[j][1]]=this.WALL;
         // Cell update
-        this.cells[this.rooms[i].cells[j][0]+':'+this.rooms[i].cells[j][1]].type=this.CellType(this.cellTypes[this.WALL]);
+        this.cells[this.rooms[i].cells[j][0]+':'+this.rooms[i].cells[j][1]].type=new this.CellType(this.cellTypes[this.WALL]);
         this.cells[this.rooms[i].cells[j][0]+':'+this.rooms[i].cells[j][1]].roomId=null;
       }
     }else{
@@ -580,15 +596,15 @@ MapGen.prototype.removeSmallRooms=function(minSize){
 }
 
 /**
-Converts a sample array into a base grid.
-array should be like:
-[
-'000',
-'010',
-'000'
-]
-where 0 is a wall cell and 1 is a room cell
-@param array sample - Sample data
+  Converts a sample array into a base grid.
+  array should be like:
+  [
+    '000',
+    '010',
+    '000'
+  ]
+  where 0 is a wall cell and 1 is a room cell
+  @param array sample - Sample data
 */
 MapGen.prototype.createMapFromSample=function(sample){
   var out=[];
@@ -620,10 +636,10 @@ MapGen.prototype.addItems=function(itemsToCreate, avoidDeadlyAreas){
 }
 
 /**
-Renders the map using jquery in the given target.
-The rendered lines/cells can have a prefixed id.
-@param string target - Target id, with the # for jQuery.
-@param string prefix - Prefix for css classes. Default is `map-`
+  Renders the map using jquery in the given target.
+  The rendered lines/cells can have a prefixed id.
+  @param string target - Target id, with the # for jQuery.
+  @param string prefix - Prefix for css classes. Default is `map-`
 */
 MapGen.prototype.jQueryRender=function(target, prefix){
   if(prefix===undefined){prefix=this.cssPrefix};
