@@ -6,7 +6,6 @@ class Row extends React.Component{
 
   render(){
     var cells=[];
-
     for(let x in this.props.rowData){
       var position=x+':'+this.props.y;
       var itemId=null;

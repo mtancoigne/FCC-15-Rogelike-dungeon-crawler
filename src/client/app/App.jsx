@@ -203,23 +203,34 @@ class App extends React.Component{
       items=this.state.items;
     }
     var pos=items.player.position.split(':');
+    // Determine theorical VP origin
     var posX=pos[0]-Math.floor((this.props.vpSize-1)/2);
     var posY=pos[1]-Math.floor((this.props.vpSize-1)/2);
     var vp=[];
+    // Check if vp is coherent
     if(posX < 0){posX=0};
     if(posX > grid[0].length - this.props.vpSize){
-      posX = grid[0].length - this.props.vpSize
+      // Check if vp>grid
+      if(this.props.vpSize>grid[0].length){
+        posX=0;
+      }else{
+        posX = grid[0].length - this.props.vpSize
+      }
     };
     if(posY < 0){posY=0};
     if(posY > grid.length - this.props.vpSize){
-      posY = grid.length - this.props.vpSize;
+      if(this.props.vpSize>grid.length){
+        posY=0;
+      }else{
+        posY = grid.length - this.props.vpSize;
+      }
     }
+
     for(let y=0; y<this.props.vpSize; y++){
       var row=[];
       for(let x=0; x<this.props.vpSize; x++){
-        let nPos=(x+posX)+':'+(y+posY);
-        let nY
-        row[x+posX]=(grid[y+posY][x+posX]);
+        //let nPos=(x+posX)+':'+(y+posY);
+        row[String(x+posX)]=(grid[y+posY][x+posX]);
       }
       vp[String(y+posY)]=row;
     }
@@ -982,7 +993,7 @@ const HOSTILES=['boss', 'enemy']
 
 const MAP_OPTIONS={x:5, y:5, passes:3, cleanLevel:5, wallPercent:10, sameSubCellPercent:80, cssPrefix:'map-', cellTypes:CELL_TYPES};
 
-var appRendered=render(<App options={MAP_OPTIONS} startLevel='1' newGame={true} playerStats={null} vpSize='15'/>, document.getElementById('app'));
+var appRendered=render(<App options={MAP_OPTIONS} startLevel='1' newGame={true} playerStats={null} vpSize={15}/>, document.getElementById('app'));
 
 $(document).keydown(function(e) {
   if([37,38,39,40].indexOf(e.keyCode)>-1){
